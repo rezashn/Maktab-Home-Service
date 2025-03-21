@@ -25,11 +25,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public User registerUser(User user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new DuplicateResourceException("email already exists");
+            throw new DuplicateResourceException("EMAIL ALREADY EXISTS");
         }
 
         if (!isValidPassword(user.getPassword())) {
-            throw new InvalidDataInputException("password is incorrect");
+            throw new InvalidDataInputException("PASSWORD DOES NOT MATCH");
         }
 
         user.setRegistrationDate(LocalDateTime.now());
@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User changePassword(Long userId, String newPassword) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResponseNotFoundException("user not found"));
+                .orElseThrow(() -> new ResponseNotFoundException("USER NOT FOUND"));
 
         if (!isValidPassword(newPassword)) {
             throw new InvalidDataInputException("PASSWORD SHOULD BE AT LEAST 8 CHARACTERS");
