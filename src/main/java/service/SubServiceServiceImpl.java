@@ -54,4 +54,9 @@ public class SubServiceServiceImpl implements SubServiceService {
     public List<SubService> getAllSubServicesByServiceCategoryId(Long serviceCategoryId) {
         return subServiceRepository.findByServiceCategoryId(serviceCategoryId);
     }
+
+    @Override
+    public List<SubService> getSubServicesByCategoryId(Long categoryId) {
+        return subServiceRepository.findByServiceCategoryId(categoryId);
+    }
 }

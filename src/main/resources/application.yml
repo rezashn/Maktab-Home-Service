@@ -13,4 +13,4 @@ spring:
       max-file-size: 300KB
       max-request-size: 300KB
 server:
-  port: 8080
+  port: 8081
