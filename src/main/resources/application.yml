@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+  servlet:
+    multipart:
+      max-file-size: 300KB
+      max-request-size: 300KB
+server:
+  port: 8080
+  .idea/
+  target/
+  *.log
+  *.iml
+  .DS_Store
