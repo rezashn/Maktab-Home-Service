@@ -10,6 +10,7 @@ import java.util.List;
 public interface SubServiceRepository extends JpaRepository<SubService, Long> {
 
     boolean existsByNameAndServiceCategoryId(String name, Long serviceCategoryId);
+
     List<SubService> findByServiceCategoryId(Long serviceCategoryId);
 
 }

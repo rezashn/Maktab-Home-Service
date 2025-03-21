@@ -9,20 +9,20 @@ import lombok.Data;
 public class SubService {
 
 
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-        @Column(nullable = false)
-        private String name;
+    @Column(nullable = false)
+    private String name;
 
-        private String description;
+    private String description;
 
-        @Column(nullable = false)
-        private double basePrice;
+    @Column(nullable = false)
+    private double basePrice;
 
-        @ManyToOne
-        @JoinColumn(name = "service_category_id", nullable = false)
-        private ServiceCategory serviceCategory;
-    }
+    @ManyToOne
+    @JoinColumn(name = "service_category_id", nullable = false)
+    private ServiceCategory serviceCategory;
+}
 }
