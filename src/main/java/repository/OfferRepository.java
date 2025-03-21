@@ -1,9 +1,9 @@
 package repository;
 
-import entity.Proposal;
+import entity.Offer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ProposalRepository extends JpaRepository<Proposal, Long> {
+public interface OfferRepository extends JpaRepository<Offer, Long> {
 }

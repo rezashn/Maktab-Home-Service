@@ -25,6 +25,7 @@ public class OrderServiceImpl implements OrderService {
         this.specialistServiceImpl = specialistServiceImpl;
     }
 
+    @Override
     public Order createOrder(Order order) {
         userServiceImpl.getUserById(order.getCustomer().getId());
         subServiceServiceImpl.getSubServiceById(order.getSubService().getId());
@@ -34,6 +35,7 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.save(order);
     }
 
+    @Override
     public Order updateOrder(Long orderId, Order orderDetails) {
         Order existingOrder = getOrderById(orderId);
         existingOrder.setCustomer(userServiceImpl.getUserById(orderDetails.getCustomer().getId()));
@@ -52,6 +54,7 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.save(existingOrder);
     }
 
+    @Override
     public void deleteOrder(Long orderId) {
         if (!orderRepository.existsById(orderId)) {
             throw new ResponseNotFoundException("ORDER NOT FOUND");
@@ -59,10 +62,12 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.deleteById(orderId);
     }
 
+    @Override
     public Order getOrderById(Long orderId) {
         return orderRepository.findById(orderId).orElseThrow(() -> new ResponseNotFoundException("ORDER NOT FOUND"));
     }
 
+    @Override
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }

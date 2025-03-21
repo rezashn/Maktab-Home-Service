@@ -22,6 +22,7 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
     }
 
+    @Override
     public User registerUser(User user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new DuplicateResourceException("email already exists");
@@ -35,6 +36,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
+    @Override
     public User changePassword(Long userId, String newPassword) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseNotFoundException("user not found"));
@@ -47,6 +49,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
+    @Override
     public List<User> getUsers(UserRole role, String firstName, String lastName, String email) {
 
         List<User> users = userRepository.findAll();
@@ -70,6 +73,7 @@ public class UserServiceImpl implements UserService {
         return users;
     }
 
+    @Override
     public User getUserById(long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResponseNotFoundException("USER NOT FOUND!!"));

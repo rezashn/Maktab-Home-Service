@@ -1,13 +1,12 @@
 package entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "proposals")
-public class Proposal {
+@Table(name = "offers")
+public class Offer {
 
 
     @Id
@@ -22,7 +21,7 @@ public class Proposal {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    private LocalDateTime proposalDate;
+    private LocalDateTime offerDate;
 
     private double suggestedPrice;
 
@@ -46,16 +45,16 @@ public class Proposal {
         return suggestedPrice;
     }
 
-    public LocalDateTime getProposalDate() {
-        return proposalDate;
-    }
-
     public LocalDateTime getStartTime() {
         return startTime;
     }
 
     public int getExecutionTime() {
         return executionTime;
+    }
+
+    public LocalDateTime getOfferDate() {
+        return offerDate;
     }
 
     public void setId(Long id) {
@@ -74,15 +73,14 @@ public class Proposal {
         this.executionTime = executionTime;
     }
 
-    public void setProposalDate(LocalDateTime proposalDate) {
-        this.proposalDate = proposalDate;
-    }
-
     public void setSpecialist(Specialist specialist) {
         this.specialist = specialist;
     }
 
     public void setOrder(Order order) {
         this.order = order;
+    }
+    public void setOfferDate(LocalDateTime offerDate) {
+        this.offerDate = offerDate;
     }
 }

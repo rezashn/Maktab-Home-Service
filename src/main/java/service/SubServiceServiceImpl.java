@@ -22,6 +22,7 @@ public class SubServiceServiceImpl implements SubServiceService {
         this.serviceCategoryServiceImpl = serviceCategoryServiceImpl;
     }
 
+    @Override
     public SubService addSubService(SubService subService) {
         serviceCategoryServiceImpl.getServiceCategoryById(subService.getServiceCategory().getId());
         if (subServiceRepository.existsByNameAndServiceCategoryId(subService.getName(), subService.getServiceCategory().getId())) {
@@ -30,6 +31,7 @@ public class SubServiceServiceImpl implements SubServiceService {
         return subServiceRepository.save(subService);
     }
 
+    @Override
     public SubService updateSubService(Long id, SubService subService) {
         SubService existingSubService = subServiceRepository.findById(id)
                 .orElseThrow(() -> new ResponseNotFoundException("SubService not found"));
@@ -40,6 +42,7 @@ public class SubServiceServiceImpl implements SubServiceService {
         return subServiceRepository.save(existingSubService);
     }
 
+    @Override
     public void deleteSubService(Long id) {
         if (!subServiceRepository.existsById(id)) {
             throw new ResponseNotFoundException("SubService not found");
@@ -47,10 +50,12 @@ public class SubServiceServiceImpl implements SubServiceService {
         subServiceRepository.deleteById(id);
     }
 
+    @Override
     public SubService getSubServiceById(Long id) {
         return subServiceRepository.findById(id).orElseThrow(() -> new ResponseNotFoundException("SubService Not found"));
     }
 
+    @Override
     public List<SubService> getAllSubServicesByServiceCategoryId(Long serviceCategoryId) {
         return subServiceRepository.findByServiceCategoryId(serviceCategoryId);
     }

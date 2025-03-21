@@ -20,6 +20,7 @@ public class ServiceCategoryServiceImpl implements ServiceCategoryService {
         this.serviceCategoryRepository = serviceCategoryRepository;
     }
 
+    @Override
     public ServiceCategory addServiceCategory(ServiceCategory serviceCategory) {
         if (serviceCategoryRepository.existsByName(serviceCategory.getName())) {
             throw new DuplicateResourceException("Service category name already exists");
@@ -27,6 +28,7 @@ public class ServiceCategoryServiceImpl implements ServiceCategoryService {
         return serviceCategoryRepository.save(serviceCategory);
     }
 
+    @Override
     public ServiceCategory updateServiceCategory(Long id, ServiceCategory serviceCategory) {
         ServiceCategory existingCategory = serviceCategoryRepository.findById(id)
                 .orElseThrow(() -> new ResponseNotFoundException("Service category not found"));
@@ -35,6 +37,7 @@ public class ServiceCategoryServiceImpl implements ServiceCategoryService {
         return serviceCategoryRepository.save(existingCategory);
     }
 
+    @Override
     public void deleteServiceCategory(Long id) {
         if (!serviceCategoryRepository.existsById(id)) {
             throw new ResponseNotFoundException("Service category not found");
@@ -42,10 +45,12 @@ public class ServiceCategoryServiceImpl implements ServiceCategoryService {
         serviceCategoryRepository.deleteById(id);
     }
 
+    @Override
     public ServiceCategory getServiceCategoryById(Long id) {
         return serviceCategoryRepository.findById(id).orElseThrow(() -> new ResponseNotFoundException("Service Category Not found"));
     }
 
+    @Override
     public List<ServiceCategory> getAllServiceCategories() {
         return serviceCategoryRepository.findAll();
     }

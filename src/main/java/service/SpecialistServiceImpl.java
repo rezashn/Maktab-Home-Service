@@ -22,11 +22,13 @@ public class SpecialistServiceImpl implements SpecialistService {
         this.userServiceImpl = userServiceImpl;
     }
 
+    @Override
     public Specialist addSpecialist(Specialist specialist) {
         userServiceImpl.getUserById(specialist.getUser().getId());
         return specialistRepository.save(specialist);
     }
 
+    @Override
     public Specialist updateSpecialist(Long specialistId, Specialist specialistDetails) {
         Specialist existingSpecialist = getSpecialistById(specialistId);
         existingSpecialist.setUser(userServiceImpl.getUserById(specialistDetails.getUser().getId()));
@@ -36,6 +38,7 @@ public class SpecialistServiceImpl implements SpecialistService {
         return specialistRepository.save(existingSpecialist);
     }
 
+    @Override
     public void deleteSpecialist(Long specialistId) {
         if (!specialistRepository.existsById(specialistId)) {
             throw new ResponseNotFoundException("specialist not found");
@@ -43,20 +46,24 @@ public class SpecialistServiceImpl implements SpecialistService {
         specialistRepository.deleteById(specialistId);
     }
 
+    @Override
     public Specialist getSpecialistById(Long specialistId) {
         return specialistRepository.findById(specialistId).orElseThrow(() -> new ResponseNotFoundException("specialist not found"));
     }
 
+    @Override
     public List<Specialist> getAllSpecialists() {
         return specialistRepository.findAll();
     }
 
+    @Override
     public void addSubServiceToSpecialist(Long specialistId, Long subServiceId) {
         Specialist specialist = getSpecialistById(specialistId);
         specialist.getSubServices().add(subServiceServiceImpl.getSubServiceById(subServiceId));
         specialistRepository.save(specialist);
     }
 
+    @Override
     public void removeSubServiceFromSpecialist(Long specialistId, Long subServiceId) {
         Specialist specialist = getSpecialistById(specialistId);
         specialist.getSubServices().remove(subServiceServiceImpl.getSubServiceById(subServiceId));
