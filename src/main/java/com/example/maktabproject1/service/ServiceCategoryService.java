@@ -5,9 +5,9 @@ import com.example.maktabproject1.entity.ServiceCategoryEntity;
 import java.util.List;
 
 public interface ServiceCategoryService {
-    ServiceCategoryEntity addServiceCategory(ServiceCategoryEntity serviceCategory);
+    ServiceCategoryEntity addServiceCategory(ServiceCategoryEntity serviceCategoryEntity);
 
-    ServiceCategoryEntity updateServiceCategory(Long serviceCategoryId, ServiceCategoryEntity serviceCategoryDetails);
+    ServiceCategoryEntity updateServiceCategory(Long serviceCategoryId, ServiceCategoryEntity serviceCategoryEntity);
 
     void deleteServiceCategory(Long serviceCategoryId);
 

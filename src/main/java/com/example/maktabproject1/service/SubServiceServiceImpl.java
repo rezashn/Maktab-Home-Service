@@ -23,22 +23,22 @@ public class SubServiceServiceImpl implements SubServiceService {
     }
 
     @Override
-    public SubServiceEntity addSubService(SubServiceEntity subService) {
-        serviceCategoryServiceImpl.getServiceCategoryById(subService.getServiceCategory().getId());
-        if (subServiceRepository.existsByNameAndServiceCategoryId(subService.getName(), subService.getServiceCategory().getId())) {
+    public SubServiceEntity addSubService(SubServiceEntity subServiceEntity) {
+        serviceCategoryServiceImpl.getServiceCategoryById(subServiceEntity.getServiceCategory().getId());
+        if (subServiceRepository.existsByNameAndServiceCategoryId(subServiceEntity.getName(), subServiceEntity.getServiceCategory().getId())) {
             throw new DuplicateResourceException("Sub service name already exists in this category");
         }
-        return subServiceRepository.save(subService);
+        return subServiceRepository.save(subServiceEntity);
     }
 
     @Override
-    public SubServiceEntity updateSubService(Long id, SubServiceEntity subService) {
+    public SubServiceEntity updateSubService(Long id, SubServiceEntity subServiceEntity) {
         SubServiceEntity existingSubService = subServiceRepository.findById(id)
                 .orElseThrow(() -> new ResponseNotFoundException("SubService not found"));
-        existingSubService.setName(subService.getName());
-        existingSubService.setDescription(subService.getDescription());
-        existingSubService.setBasePrice(subService.getBasePrice());
-        existingSubService.setServiceCategory(serviceCategoryServiceImpl.getServiceCategoryById(subService.getServiceCategory().getId()));
+        existingSubService.setName(subServiceEntity.getName());
+        existingSubService.setDescription(subServiceEntity.getDescription());
+        existingSubService.setBasePrice(subServiceEntity.getBasePrice());
+        existingSubService.setServiceCategory(serviceCategoryServiceImpl.getServiceCategoryById(subServiceEntity.getServiceCategory().getId()));
         return subServiceRepository.save(existingSubService);
     }
 

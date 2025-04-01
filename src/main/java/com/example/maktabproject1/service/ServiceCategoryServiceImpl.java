@@ -21,19 +21,19 @@ public class ServiceCategoryServiceImpl implements ServiceCategoryService {
     }
 
     @Override
-    public ServiceCategoryEntity addServiceCategory(ServiceCategoryEntity serviceCategory) {
-        if (serviceCategoryRepository.existsByName(serviceCategory.getName())) {
+    public ServiceCategoryEntity addServiceCategory(ServiceCategoryEntity serviceCategoryEntity) {
+        if (serviceCategoryRepository.existsByName(serviceCategoryEntity.getName())) {
             throw new DuplicateResourceException("Service category name already exists");
         }
-        return serviceCategoryRepository.save(serviceCategory);
+        return serviceCategoryRepository.save(serviceCategoryEntity);
     }
 
     @Override
-    public ServiceCategoryEntity updateServiceCategory(Long id, ServiceCategoryEntity serviceCategory) {
+    public ServiceCategoryEntity updateServiceCategory(Long id, ServiceCategoryEntity serviceCategoryEntity) {
         ServiceCategoryEntity existingCategory = serviceCategoryRepository.findById(id)
                 .orElseThrow(() -> new ResponseNotFoundException("Service category not found"));
-        existingCategory.setName(serviceCategory.getName());
-        existingCategory.setDescription(serviceCategory.getDescription());
+        existingCategory.setName(serviceCategoryEntity.getName());
+        existingCategory.setDescription(serviceCategoryEntity.getDescription());
         return serviceCategoryRepository.save(existingCategory);
     }
 

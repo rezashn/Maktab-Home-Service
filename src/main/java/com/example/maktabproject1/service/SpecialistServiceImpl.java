@@ -16,25 +16,27 @@ public class SpecialistServiceImpl implements SpecialistService {
     private final UserServiceImpl userServiceImpl;
 
     @Autowired
-    public SpecialistServiceImpl(SpecialistRepository specialistRepository, SubServiceServiceImpl subServiceServiceImpl, UserServiceImpl userServiceImpl) {
+    public SpecialistServiceImpl(SpecialistRepository specialistRepository,
+                                 SubServiceServiceImpl subServiceServiceImpl,
+                                 UserServiceImpl userServiceImpl) {
         this.specialistRepository = specialistRepository;
         this.subServiceServiceImpl = subServiceServiceImpl;
         this.userServiceImpl = userServiceImpl;
     }
 
     @Override
-    public SpecialistEntity addSpecialist(SpecialistEntity specialist) {
-        userServiceImpl.getUserById(specialist.getUser().getId());
-        return specialistRepository.save(specialist);
+    public SpecialistEntity addSpecialist(SpecialistEntity specialistEntity) {
+        userServiceImpl.getUserById(specialistEntity.getUser().getId());
+        return specialistRepository.save(specialistEntity);
     }
 
     @Override
-    public SpecialistEntity updateSpecialist(Long specialistId, SpecialistEntity specialistDetails) {
+    public SpecialistEntity updateSpecialist(Long specialistId, SpecialistEntity specialistEntity) {
         SpecialistEntity existingSpecialist = getSpecialistById(specialistId);
-        existingSpecialist.setUser(userServiceImpl.getUserById(specialistDetails.getUser().getId()));
-        existingSpecialist.setProfilePicture(specialistDetails.getProfilePicture());
-        existingSpecialist.setRating(specialistDetails.getRating());
-        existingSpecialist.setSubServices(specialistDetails.getSubServices());
+        existingSpecialist.setUser(userServiceImpl.getUserById(specialistEntity.getUser().getId()));
+        existingSpecialist.setProfilePicture(specialistEntity.getProfilePicture());
+        existingSpecialist.setRating(specialistEntity.getRating());
+        existingSpecialist.setSubServices(specialistEntity.getSubServices());
         return specialistRepository.save(existingSpecialist);
     }
 

@@ -23,17 +23,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity registerUser(UserEntity user) {
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+    public UserEntity registerUser(UserEntity userEntity) {
+        if (userRepository.findByEmail(userEntity.getEmail()).isPresent()) {
             throw new DuplicateResourceException("EMAIL ALREADY EXISTS");
         }
 
-        if (!isValidPassword(user.getPassword())) {
+        if (!isValidPassword(userEntity.getPassword())) {
             throw new InvalidDataInputException("PASSWORD DOES NOT MATCH");
         }
 
-        user.setRegistrationDate(LocalDateTime.now());
-        return userRepository.save(user);
+        userEntity.setRegistrationDate(LocalDateTime.now());
+        return userRepository.save(userEntity);
     }
 
     @Override
@@ -50,12 +50,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserEntity> getUsers(UserRoleEntity role, String firstName, String lastName, String email) {
+    public List<UserEntity> getUsers(UserRoleEntity userRoleEntity, String firstName, String lastName, String email) {
 
         List<UserEntity> users = userRepository.findAll();
 
-        if (role != null) {
-            users.removeIf(user -> user.getRole() != role);
+        if (userRoleEntity != null) {
+            users.removeIf(user -> user.getRole() != userRoleEntity);
         }
 
         if (firstName != null && !firstName.isEmpty()) {

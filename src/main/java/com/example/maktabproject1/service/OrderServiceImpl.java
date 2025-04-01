@@ -18,7 +18,10 @@ public class OrderServiceImpl implements OrderService {
     private final SpecialistServiceImpl specialistServiceImpl;
 
     @Autowired
-    public OrderServiceImpl(OrderRepository orderRepository, UserServiceImpl userServiceImpl, SubServiceServiceImpl subServiceServiceImpl, SpecialistServiceImpl specialistServiceImpl) {
+    public OrderServiceImpl(OrderRepository orderRepository,
+                            UserServiceImpl userServiceImpl,
+                            SubServiceServiceImpl subServiceServiceImpl,
+                            SpecialistServiceImpl specialistServiceImpl) {
         this.orderRepository = orderRepository;
         this.userServiceImpl = userServiceImpl;
         this.subServiceServiceImpl = subServiceServiceImpl;
@@ -26,28 +29,28 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderEntity createOrder(OrderEntity order) {
-        userServiceImpl.getUserById(order.getCustomer().getId());
-        subServiceServiceImpl.getSubServiceById(order.getSubService().getId());
-        if (order.getSpecialist() != null) {
-            specialistServiceImpl.getSpecialistById(order.getSpecialist().getId());
+    public OrderEntity createOrder(OrderEntity orderEntity) {
+        userServiceImpl.getUserById(orderEntity.getCustomer().getId());
+        subServiceServiceImpl.getSubServiceById(orderEntity.getSubService().getId());
+        if (orderEntity.getSpecialist() != null) {
+            specialistServiceImpl.getSpecialistById(orderEntity.getSpecialist().getId());
         }
-        return orderRepository.save(order);
+        return orderRepository.save(orderEntity);
     }
 
     @Override
-    public OrderEntity updateOrder(Long orderId, OrderEntity orderDetails) {
+    public OrderEntity updateOrder(Long orderId, OrderEntity orderDetailsEntity) {
         OrderEntity existingOrder = getOrderById(orderId);
-        existingOrder.setCustomer(userServiceImpl.getUserById(orderDetails.getCustomer().getId()));
-        existingOrder.setSubService(subServiceServiceImpl.getSubServiceById(orderDetails.getSubService().getId()));
-        existingOrder.setDescription(orderDetails.getDescription());
-        existingOrder.setSuggestedPrice(orderDetails.getSuggestedPrice());
-        existingOrder.setOrderDate(orderDetails.getOrderDate());
-        existingOrder.setExecutionDate(orderDetails.getExecutionDate());
-        existingOrder.setAddress(orderDetails.getAddress());
-        existingOrder.setStatus(orderDetails.getStatus());
-        if (orderDetails.getSpecialist() != null) {
-            existingOrder.setSpecialist(specialistServiceImpl.getSpecialistById(orderDetails.getSpecialist().getId()));
+        existingOrder.setCustomer(userServiceImpl.getUserById(orderDetailsEntity.getCustomer().getId()));
+        existingOrder.setSubService(subServiceServiceImpl.getSubServiceById(orderDetailsEntity.getSubService().getId()));
+        existingOrder.setDescription(orderDetailsEntity.getDescription());
+        existingOrder.setSuggestedPrice(orderDetailsEntity.getSuggestedPrice());
+        existingOrder.setOrderDate(orderDetailsEntity.getOrderDate());
+        existingOrder.setExecutionDate(orderDetailsEntity.getExecutionDate());
+        existingOrder.setAddress(orderDetailsEntity.getAddress());
+        existingOrder.setStatus(orderDetailsEntity.getStatus());
+        if (orderDetailsEntity.getSpecialist() != null) {
+            existingOrder.setSpecialist(specialistServiceImpl.getSpecialistById(orderDetailsEntity.getSpecialist().getId()));
         } else {
             existingOrder.setSpecialist(null);
         }

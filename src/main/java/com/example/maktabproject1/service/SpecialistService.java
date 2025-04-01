@@ -5,9 +5,9 @@ import com.example.maktabproject1.entity.SpecialistEntity;
 import java.util.List;
 
 public interface SpecialistService {
-    SpecialistEntity addSpecialist(SpecialistEntity specialist);
+    SpecialistEntity addSpecialist(SpecialistEntity specialistEntity);
 
-    SpecialistEntity updateSpecialist(Long specialistId, SpecialistEntity specialistDetails);
+    SpecialistEntity updateSpecialist(Long specialistId, SpecialistEntity specialistEntity);
 
     void deleteSpecialist(Long specialistId);
 
