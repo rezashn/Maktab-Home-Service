@@ -1,10 +1,10 @@
-package service;
+package com.example.maktabproject1.service;
 
-import entity.Order;
-import exception.ResponseNotFoundException;
+import com.example.maktabproject1.exception.ResponseNotFoundException;
+import com.example.maktabproject1.repository.OrderRepository;
+import com.example.maktabproject1.entity.OrderEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import repository.OrderRepository;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order createOrder(Order order) {
+    public OrderEntity createOrder(OrderEntity order) {
         userServiceImpl.getUserById(order.getCustomer().getId());
         subServiceServiceImpl.getSubServiceById(order.getSubService().getId());
         if (order.getSpecialist() != null) {
@@ -36,8 +36,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order updateOrder(Long orderId, Order orderDetails) {
-        Order existingOrder = getOrderById(orderId);
+    public OrderEntity updateOrder(Long orderId, OrderEntity orderDetails) {
+        OrderEntity existingOrder = getOrderById(orderId);
         existingOrder.setCustomer(userServiceImpl.getUserById(orderDetails.getCustomer().getId()));
         existingOrder.setSubService(subServiceServiceImpl.getSubServiceById(orderDetails.getSubService().getId()));
         existingOrder.setDescription(orderDetails.getDescription());
@@ -63,12 +63,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order getOrderById(Long orderId) {
+    public OrderEntity getOrderById(Long orderId) {
         return orderRepository.findById(orderId).orElseThrow(() -> new ResponseNotFoundException("ORDER NOT FOUND"));
     }
 
     @Override
-    public List<Order> getAllOrders() {
+    public List<OrderEntity> getAllOrders() {
         return orderRepository.findAll();
     }
 }

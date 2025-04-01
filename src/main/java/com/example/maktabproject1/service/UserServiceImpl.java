@@ -1,13 +1,13 @@
-package service;
+package com.example.maktabproject1.service;
 
-import entity.User;
-import entity.UserRole;
-import exception.DuplicateResourceException;
-import exception.InvalidDataInputException;
-import exception.ResponseNotFoundException;
+import com.example.maktabproject1.entity.UserRoleEntity;
+import com.example.maktabproject1.exception.DuplicateResourceException;
+import com.example.maktabproject1.exception.InvalidDataInputException;
+import com.example.maktabproject1.exception.ResponseNotFoundException;
+import com.example.maktabproject1.repository.UserRepository;
+import com.example.maktabproject1.entity.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User registerUser(User user) {
+    public UserEntity registerUser(UserEntity user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new DuplicateResourceException("EMAIL ALREADY EXISTS");
         }
@@ -37,8 +37,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User changePassword(Long userId, String newPassword) {
-        User user = userRepository.findById(userId)
+    public UserEntity changePassword(Long userId, String newPassword) {
+        UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseNotFoundException("USER NOT FOUND"));
 
         if (!isValidPassword(newPassword)) {
@@ -50,9 +50,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getUsers(UserRole role, String firstName, String lastName, String email) {
+    public List<UserEntity> getUsers(UserRoleEntity role, String firstName, String lastName, String email) {
 
-        List<User> users = userRepository.findAll();
+        List<UserEntity> users = userRepository.findAll();
 
         if (role != null) {
             users.removeIf(user -> user.getRole() != role);
@@ -74,9 +74,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserById(long id) {
+    public UserEntity getUserById(long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new ResponseNotFoundException("USER NOT FOUND!!"));
+                .orElseThrow(() -> new ResponseNotFoundException("USER NOT FOUND!"));
     }
 
     private boolean isValidPassword(String password) {

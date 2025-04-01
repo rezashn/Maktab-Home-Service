@@ -1,10 +1,10 @@
-package service;
+package com.example.maktabproject1.service;
 
-import entity.Specialist;
-import exception.ResponseNotFoundException;
+import com.example.maktabproject1.entity.SpecialistEntity;
+import com.example.maktabproject1.exception.ResponseNotFoundException;
+import com.example.maktabproject1.repository.SpecialistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import repository.SpecialistRepository;
 
 import java.util.List;
 
@@ -23,14 +23,14 @@ public class SpecialistServiceImpl implements SpecialistService {
     }
 
     @Override
-    public Specialist addSpecialist(Specialist specialist) {
+    public SpecialistEntity addSpecialist(SpecialistEntity specialist) {
         userServiceImpl.getUserById(specialist.getUser().getId());
         return specialistRepository.save(specialist);
     }
 
     @Override
-    public Specialist updateSpecialist(Long specialistId, Specialist specialistDetails) {
-        Specialist existingSpecialist = getSpecialistById(specialistId);
+    public SpecialistEntity updateSpecialist(Long specialistId, SpecialistEntity specialistDetails) {
+        SpecialistEntity existingSpecialist = getSpecialistById(specialistId);
         existingSpecialist.setUser(userServiceImpl.getUserById(specialistDetails.getUser().getId()));
         existingSpecialist.setProfilePicture(specialistDetails.getProfilePicture());
         existingSpecialist.setRating(specialistDetails.getRating());
@@ -47,25 +47,25 @@ public class SpecialistServiceImpl implements SpecialistService {
     }
 
     @Override
-    public Specialist getSpecialistById(Long specialistId) {
+    public SpecialistEntity getSpecialistById(Long specialistId) {
         return specialistRepository.findById(specialistId).orElseThrow(() -> new ResponseNotFoundException("specialist not found"));
     }
 
     @Override
-    public List<Specialist> getAllSpecialists() {
+    public List<SpecialistEntity> getAllSpecialists() {
         return specialistRepository.findAll();
     }
 
     @Override
     public void addSubServiceToSpecialist(Long specialistId, Long subServiceId) {
-        Specialist specialist = getSpecialistById(specialistId);
+        SpecialistEntity specialist = getSpecialistById(specialistId);
         specialist.getSubServices().add(subServiceServiceImpl.getSubServiceById(subServiceId));
         specialistRepository.save(specialist);
     }
 
     @Override
     public void removeSubServiceFromSpecialist(Long specialistId, Long subServiceId) {
-        Specialist specialist = getSpecialistById(specialistId);
+        SpecialistEntity specialist = getSpecialistById(specialistId);
         specialist.getSubServices().remove(subServiceServiceImpl.getSubServiceById(subServiceId));
         specialistRepository.save(specialist);
     }

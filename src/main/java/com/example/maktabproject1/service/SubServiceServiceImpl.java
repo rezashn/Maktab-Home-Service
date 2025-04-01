@@ -1,11 +1,11 @@
-package service;
+package com.example.maktabproject1.service;
 
-import entity.SubService;
-import exception.DuplicateResourceException;
-import exception.ResponseNotFoundException;
+import com.example.maktabproject1.entity.SubServiceEntity;
+import com.example.maktabproject1.exception.DuplicateResourceException;
+import com.example.maktabproject1.exception.ResponseNotFoundException;
+import com.example.maktabproject1.repository.SubServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import repository.SubServiceRepository;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ public class SubServiceServiceImpl implements SubServiceService {
     }
 
     @Override
-    public SubService addSubService(SubService subService) {
+    public SubServiceEntity addSubService(SubServiceEntity subService) {
         serviceCategoryServiceImpl.getServiceCategoryById(subService.getServiceCategory().getId());
         if (subServiceRepository.existsByNameAndServiceCategoryId(subService.getName(), subService.getServiceCategory().getId())) {
             throw new DuplicateResourceException("Sub service name already exists in this category");
@@ -32,8 +32,8 @@ public class SubServiceServiceImpl implements SubServiceService {
     }
 
     @Override
-    public SubService updateSubService(Long id, SubService subService) {
-        SubService existingSubService = subServiceRepository.findById(id)
+    public SubServiceEntity updateSubService(Long id, SubServiceEntity subService) {
+        SubServiceEntity existingSubService = subServiceRepository.findById(id)
                 .orElseThrow(() -> new ResponseNotFoundException("SubService not found"));
         existingSubService.setName(subService.getName());
         existingSubService.setDescription(subService.getDescription());
@@ -51,17 +51,17 @@ public class SubServiceServiceImpl implements SubServiceService {
     }
 
     @Override
-    public SubService getSubServiceById(Long id) {
+    public SubServiceEntity getSubServiceById(Long id) {
         return subServiceRepository.findById(id).orElseThrow(() -> new ResponseNotFoundException("SubService Not found"));
     }
 
     @Override
-    public List<SubService> getAllSubServicesByServiceCategoryId(Long serviceCategoryId) {
+    public List<SubServiceEntity> getAllSubServicesByServiceCategoryId(Long serviceCategoryId) {
         return subServiceRepository.findByServiceCategoryId(serviceCategoryId);
     }
 
     @Override
-    public List<SubService> getSubServicesByCategoryId(Long categoryId) {
+    public List<SubServiceEntity> getSubServicesByCategoryId(Long categoryId) {
         return subServiceRepository.findByServiceCategoryId(categoryId);
     }
 }

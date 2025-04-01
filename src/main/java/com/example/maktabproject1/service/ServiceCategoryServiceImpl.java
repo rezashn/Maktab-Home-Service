@@ -1,11 +1,11 @@
-package service;
+package com.example.maktabproject1.service;
 
-import entity.ServiceCategory;
-import exception.DuplicateResourceException;
-import exception.ResponseNotFoundException;
+import com.example.maktabproject1.entity.ServiceCategoryEntity;
+import com.example.maktabproject1.exception.DuplicateResourceException;
+import com.example.maktabproject1.exception.ResponseNotFoundException;
+import com.example.maktabproject1.repository.ServiceCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import repository.ServiceCategoryRepository;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ public class ServiceCategoryServiceImpl implements ServiceCategoryService {
     }
 
     @Override
-    public ServiceCategory addServiceCategory(ServiceCategory serviceCategory) {
+    public ServiceCategoryEntity addServiceCategory(ServiceCategoryEntity serviceCategory) {
         if (serviceCategoryRepository.existsByName(serviceCategory.getName())) {
             throw new DuplicateResourceException("Service category name already exists");
         }
@@ -29,8 +29,8 @@ public class ServiceCategoryServiceImpl implements ServiceCategoryService {
     }
 
     @Override
-    public ServiceCategory updateServiceCategory(Long id, ServiceCategory serviceCategory) {
-        ServiceCategory existingCategory = serviceCategoryRepository.findById(id)
+    public ServiceCategoryEntity updateServiceCategory(Long id, ServiceCategoryEntity serviceCategory) {
+        ServiceCategoryEntity existingCategory = serviceCategoryRepository.findById(id)
                 .orElseThrow(() -> new ResponseNotFoundException("Service category not found"));
         existingCategory.setName(serviceCategory.getName());
         existingCategory.setDescription(serviceCategory.getDescription());
@@ -46,12 +46,12 @@ public class ServiceCategoryServiceImpl implements ServiceCategoryService {
     }
 
     @Override
-    public ServiceCategory getServiceCategoryById(Long id) {
+    public ServiceCategoryEntity getServiceCategoryById(Long id) {
         return serviceCategoryRepository.findById(id).orElseThrow(() -> new ResponseNotFoundException("Service Category Not found"));
     }
 
     @Override
-    public List<ServiceCategory> getAllServiceCategories() {
+    public List<ServiceCategoryEntity> getAllServiceCategories() {
         return serviceCategoryRepository.findAll();
     }
 }
