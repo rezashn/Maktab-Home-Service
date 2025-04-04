@@ -1,21 +1,18 @@
 package com.example.maktabproject1.service;
 
+import com.example.maktabproject1.dto.SpecialistDto;
 import com.example.maktabproject1.entity.SpecialistEntity;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface SpecialistService {
-    SpecialistEntity addSpecialist(SpecialistEntity specialistEntity);
-
-    SpecialistEntity updateSpecialist(Long specialistId, SpecialistEntity specialistEntity);
-
-    void deleteSpecialist(Long specialistId);
-
-    SpecialistEntity getSpecialistById(Long specialistId);
-
-    List<SpecialistEntity> getAllSpecialists();
-
-    void addSubServiceToSpecialist(Long specialistId, Long subServiceId);
-
-    void removeSubServiceFromSpecialist(Long specialistId, Long subServiceId);
+        SpecialistDto createSpecialist(SpecialistDto specialistDTO);
+        SpecialistDto getSpecialistById(Long id);
+        List<SpecialistDto> getAllSpecialists();
+        SpecialistDto updateSpecialist(Long id, SpecialistDto specialistDTO);
+        void deleteSpecialist(Long id);
+        SpecialistEntity getSpecialistEntityById(Long specialistId);
+        void setSpecialistImage(Long specialistId, MultipartFile image) throws IOException;
 }

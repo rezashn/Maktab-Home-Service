@@ -1,77 +1,140 @@
 package com.example.maktabproject1.service;
 
+import com.example.maktabproject1.dto.OrderDto;
+import com.example.maktabproject1.entity.OrderEntity;
+import com.example.maktabproject1.entity.OrderStatusEntity;
+import com.example.maktabproject1.entity.SpecialistEntity;
 import com.example.maktabproject1.exception.ResponseNotFoundException;
 import com.example.maktabproject1.repository.OrderRepository;
-import com.example.maktabproject1.entity.OrderEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class OrderServiceImpl implements OrderService {
 
-
     private final OrderRepository orderRepository;
-    private final UserServiceImpl userServiceImpl;
-    private final SubServiceServiceImpl subServiceServiceImpl;
-    private final SpecialistServiceImpl specialistServiceImpl;
+    private final UserService userService;
+    private final SubServiceService subServiceService;
+    private final SpecialistService specialistService;
 
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository,
-                            UserServiceImpl userServiceImpl,
-                            SubServiceServiceImpl subServiceServiceImpl,
-                            SpecialistServiceImpl specialistServiceImpl) {
+                            UserService userService,
+                            SubServiceService subServiceService,
+                            SpecialistService specialistService) {
         this.orderRepository = orderRepository;
-        this.userServiceImpl = userServiceImpl;
-        this.subServiceServiceImpl = subServiceServiceImpl;
-        this.specialistServiceImpl = specialistServiceImpl;
+        this.userService = userService;
+        this.subServiceService = subServiceService;
+        this.specialistService = specialistService;
     }
 
     @Override
-    public OrderEntity createOrder(OrderEntity orderEntity) {
-        userServiceImpl.getUserById(orderEntity.getCustomer().getId());
-        subServiceServiceImpl.getSubServiceById(orderEntity.getSubService().getId());
-        if (orderEntity.getSpecialist() != null) {
-            specialistServiceImpl.getSpecialistById(orderEntity.getSpecialist().getId());
-        }
-        return orderRepository.save(orderEntity);
+    @Transactional
+    public OrderDto createOrder(OrderDto dto) {
+        OrderEntity entity = mapDtoToEntity(dto);
+        entity.setStatus(OrderStatusEntity.WAITING_FOR_OFFER);
+        entity.setOrderDate(LocalDateTime.now());
+        OrderEntity savedEntity = orderRepository.save(entity);
+        log.info("Order created with ID: {}", savedEntity.getId());
+        return mapEntityToDto(savedEntity);
     }
 
     @Override
-    public OrderEntity updateOrder(Long orderId, OrderEntity orderDetailsEntity) {
-        OrderEntity existingOrder = getOrderById(orderId);
-        existingOrder.setCustomer(userServiceImpl.getUserById(orderDetailsEntity.getCustomer().getId()));
-        existingOrder.setSubService(subServiceServiceImpl.getSubServiceById(orderDetailsEntity.getSubService().getId()));
-        existingOrder.setDescription(orderDetailsEntity.getDescription());
-        existingOrder.setSuggestedPrice(orderDetailsEntity.getSuggestedPrice());
-        existingOrder.setOrderDate(orderDetailsEntity.getOrderDate());
-        existingOrder.setExecutionDate(orderDetailsEntity.getExecutionDate());
-        existingOrder.setAddress(orderDetailsEntity.getAddress());
-        existingOrder.setStatus(orderDetailsEntity.getStatus());
-        if (orderDetailsEntity.getSpecialist() != null) {
-            existingOrder.setSpecialist(specialistServiceImpl.getSpecialistById(orderDetailsEntity.getSpecialist().getId()));
-        } else {
-            existingOrder.setSpecialist(null);
-        }
-        return orderRepository.save(existingOrder);
+    @Transactional
+    public OrderDto updateOrder(Long orderId, OrderDto dto) {
+        OrderEntity existingOrder = getOrderEntityById(orderId);
+        OrderEntity updatedOrder = mapDtoToEntity(dto);
+        updatedOrder.setId(orderId);
+        OrderEntity savedUpdatedEntity = orderRepository.save(updatedOrder);
+        log.info("Order updated with ID: {}", savedUpdatedEntity.getId());
+        return mapEntityToDto(savedUpdatedEntity);
     }
 
     @Override
+    @Transactional
     public void deleteOrder(Long orderId) {
         if (!orderRepository.existsById(orderId)) {
             throw new ResponseNotFoundException("ORDER NOT FOUND");
         }
         orderRepository.deleteById(orderId);
+        log.info("Order deleted with ID: {}", orderId);
     }
 
     @Override
-    public OrderEntity getOrderById(Long orderId) {
-        return orderRepository.findById(orderId).orElseThrow(() -> new ResponseNotFoundException("ORDER NOT FOUND"));
+    public OrderDto getOrderById(Long orderId) {
+        return mapEntityToDto(getOrderEntityById(orderId));
     }
 
     @Override
-    public List<OrderEntity> getAllOrders() {
-        return orderRepository.findAll();
+    public List<OrderDto> getAllOrders() {
+        List<OrderDto> dtoList = new ArrayList<>();
+        orderRepository.findAll().forEach(entity -> dtoList.add(mapEntityToDto(entity)));
+        return dtoList;
+    }
+
+    @Override
+    @Transactional
+    public OrderDto updateOrderStatus(Long orderId, OrderStatusEntity newStatus) {
+        OrderEntity order = getOrderEntityById(orderId);
+        order.setStatus(newStatus);
+        OrderEntity updatedOrder = orderRepository.save(order);
+        log.info("Order status updated to {} for order ID: {}", newStatus, orderId);
+        return mapEntityToDto(updatedOrder);
+    }
+
+    @Override
+    @Transactional
+    public OrderDto assignSpecialistToOrder(Long orderId, Long specialistId) {
+        OrderEntity order = getOrderEntityById(orderId);
+        SpecialistEntity specialist = specialistService.getSpecialistEntityById(specialistId);
+        order.setSpecialist(specialist);
+        order.setStatus(OrderStatusEntity.SPECIALIST_ON_THE_WAY);
+        OrderEntity updatedOrder = orderRepository.save(order);
+        log.info("Specialist assigned to order ID: {}", orderId);
+        return mapEntityToDto(updatedOrder);
+    }
+
+    private OrderEntity mapDtoToEntity(OrderDto dto) {
+        OrderEntity entity = new OrderEntity();
+        entity.setId(dto.getId());
+        entity.setCustomer(userService.getUserEntityById(dto.getCustomerId()));
+        entity.setSubService(subServiceService.getSubServiceEntityById(dto.getSubServiceId()));
+        entity.setDescription(dto.getDescription());
+        entity.setSuggestedPrice(dto.getProposedPrice());
+        entity.setOrderDate(dto.getOrderDate());
+        entity.setAddress(dto.getAddress());
+        entity.setStatus(OrderStatusEntity.valueOf(dto.getOrderStatus()));
+        if (dto.getSpecialistId() != null) {
+            entity.setSpecialist(specialistService.getSpecialistEntityById(dto.getSpecialistId()));
+        }
+        return entity;
+    }
+
+    private OrderDto mapEntityToDto(OrderEntity entity) {
+        OrderDto dto = new OrderDto();
+        dto.setId(entity.getId());
+        dto.setCustomerId(entity.getCustomer().getId());
+        dto.setSubServiceId(entity.getSubService().getId());
+        dto.setDescription(entity.getDescription());
+        dto.setProposedPrice(entity.getSuggestedPrice());
+        dto.setOrderDate(entity.getOrderDate());
+        dto.setAddress(entity.getAddress());
+        dto.setOrderStatus(entity.getStatus().name());
+        if (entity.getSpecialist() != null) {
+            dto.setSpecialistId(entity.getSpecialist().getId());
+        }
+        return dto;
+    }
+
+    private OrderEntity getOrderEntityById(Long id) {
+        return orderRepository.findById(id)
+                .orElseThrow(() -> new ResponseNotFoundException("Order not found: " + id));
     }
 }

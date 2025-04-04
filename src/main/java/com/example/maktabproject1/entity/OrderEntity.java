@@ -1,16 +1,15 @@
 package com.example.maktabproject1.entity;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "orders")
 @Data
 public class OrderEntity {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +25,7 @@ public class OrderEntity {
 
     private String description;
 
-    private double suggestedPrice;
+    private BigDecimal suggestedPrice;
 
     private LocalDateTime orderDate;
 
@@ -40,5 +39,4 @@ public class OrderEntity {
     @ManyToOne
     @JoinColumn(name = "specialist_id")
     private SpecialistEntity specialist;
-
 }

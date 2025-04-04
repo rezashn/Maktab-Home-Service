@@ -1,13 +1,23 @@
 package com.example.maktabproject1.service;
 
-import com.example.maktabproject1.entity.OrderEntity;
+import com.example.maktabproject1.dto.OrderDto;
+import com.example.maktabproject1.entity.OrderStatusEntity;
 
 import java.util.List;
 
 public interface OrderService {
-    OrderEntity createOrder(OrderEntity orderEntity);
-    OrderEntity updateOrder(Long orderId, OrderEntity orderDetailsEntity);
+
+    OrderDto createOrder(OrderDto orderDTO);
+
+    OrderDto updateOrder(Long orderId, OrderDto orderDTO);
+
     void deleteOrder(Long orderId);
-    OrderEntity getOrderById(Long orderId);
-    List<OrderEntity> getAllOrders();
+
+    OrderDto getOrderById(Long orderId);
+
+    List<OrderDto> getAllOrders();
+
+    OrderDto updateOrderStatus(Long orderId, OrderStatusEntity newStatus);
+
+    OrderDto assignSpecialistToOrder(Long orderId, Long specialistId);
 }

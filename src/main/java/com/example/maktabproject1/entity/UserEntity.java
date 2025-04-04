@@ -1,9 +1,9 @@
 package com.example.maktabproject1.entity;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -38,6 +38,8 @@ public class UserEntity {
     @Column(nullable = false)
     private LocalDateTime registrationDate;
 
-    private double credit;
+    @Column(name = "image_path", length = 255)
+    private String imagePath;
 
+    private BigDecimal credit;
 }

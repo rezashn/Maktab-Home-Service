@@ -1,18 +1,29 @@
 package com.example.maktabproject1.service;
 
-import com.example.maktabproject1.entity.UserRoleEntity;
+import com.example.maktabproject1.dto.UserDto;
+import com.example.maktabproject1.entity.UserEntity;
+import com.example.maktabproject1.entity.UserStatusEntity;
 import com.example.maktabproject1.exception.DuplicateResourceException;
-import com.example.maktabproject1.exception.InvalidDataInputException;
 import com.example.maktabproject1.exception.ResponseNotFoundException;
 import com.example.maktabproject1.repository.UserRepository;
-import com.example.maktabproject1.entity.UserEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -23,77 +34,111 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity registerUser(UserEntity userEntity) {
-        if (userRepository.findByEmail(userEntity.getEmail()).isPresent()) {
-            throw new DuplicateResourceException("EMAIL ALREADY EXISTS");
+    public UserDto registerUser(UserDto dto) {
+        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new DuplicateResourceException("Email already exists");
         }
-
-        if (!isValidPassword(userEntity.getPassword())) {
-            throw new InvalidDataInputException("PASSWORD DOES NOT MATCH");
-        }
-
-        userEntity.setRegistrationDate(LocalDateTime.now());
-        return userRepository.save(userEntity);
+        UserEntity entity = mapDtoToEntity(dto);
+        entity.setStatus(UserStatusEntity.NEW);
+        entity.setRegistrationDate(LocalDateTime.now());
+        UserEntity savedEntity = userRepository.save(entity);
+        log.info("User registered with ID: {}", savedEntity.getId());
+        return mapEntityToDto(savedEntity);
     }
 
     @Override
-    public UserEntity changePassword(Long userId, String newPassword) {
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResponseNotFoundException("USER NOT FOUND"));
-
-        if (!isValidPassword(newPassword)) {
-            throw new InvalidDataInputException("PASSWORD SHOULD BE AT LEAST 8 CHARACTERS");
-        }
-
-        user.setPassword(newPassword);
-        return userRepository.save(user);
+    public UserDto getUserById(Long id) {
+        return mapEntityToDto(userRepository.findById(id)
+                .orElseThrow(() -> new ResponseNotFoundException("User not found: " + id)));
     }
 
     @Override
-    public List<UserEntity> getUsers(UserRoleEntity userRoleEntity, String firstName, String lastName, String email) {
-
-        List<UserEntity> users = userRepository.findAll();
-
-        if (userRoleEntity != null) {
-            users.removeIf(user -> user.getRole() != userRoleEntity);
-        }
-
-        if (firstName != null && !firstName.isEmpty()) {
-            users.removeIf(user -> !user.getFirstName().contains(firstName));
-        }
-
-        if (lastName != null && !lastName.isEmpty()) {
-            users.removeIf(user -> !user.getLastName().contains(lastName));
-        }
-
-        if (email != null && !email.isEmpty()) {
-            users.removeIf(user -> !user.getEmail().contains(email));
-        }
-
-        return users;
+    public List<UserDto> getAllUsers() {
+        List<UserDto> dtoList = new ArrayList<>();
+        userRepository.findAll().forEach(entity -> dtoList.add(mapEntityToDto(entity)));
+        return dtoList;
     }
 
     @Override
-    public UserEntity getUserById(long id) {
+    @Transactional
+    public UserDto updateUser(Long id, UserDto dto) {
+        UserEntity entity = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseNotFoundException("User not found: " + id));
+        entity.setId(id);
+        UserEntity updatedEntity = userRepository.save(mapDtoToEntity(dto));
+        log.info("User updated with ID: {}", updatedEntity.getId());
+        return mapEntityToDto(updatedEntity);
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new ResponseNotFoundException("User not found: " + id);
+        }
+        userRepository.deleteById(id);
+        log.info("User deleted with ID: {}", id);
+    }
+
+    @Override
+    public UserEntity getUserEntityById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new ResponseNotFoundException("USER NOT FOUND!"));
+                .orElseThrow(() -> new ResponseNotFoundException("User not found: " + id));
     }
 
-    private boolean isValidPassword(String password) {
-        if (password.length() < 8) {
-            return false;
-        }
+    private UserEntity mapDtoToEntity(UserDto dto) {
+        UserEntity entity = new UserEntity();
+        entity.setId(dto.getId());
+        entity.setFirstName(dto.getFirstName());
+        entity.setLastName(dto.getLastName());
+        entity.setEmail(dto.getEmail());
+        entity.setPassword(dto.getPassword());
+        entity.setRole(dto.getRole());
+        entity.setCredit(dto.getCredit());
+        return entity;
+    }
 
-        boolean hasLetter = false;
-        boolean hasDigit = false;
+    private UserDto mapEntityToDto(UserEntity entity) {
+        UserDto dto = new UserDto();
+        dto.setId(entity.getId());
+        dto.setFirstName(entity.getFirstName());
+        dto.setLastName(entity.getLastName());
+        dto.setEmail(entity.getEmail());
+        dto.setPassword(entity.getPassword());
+        dto.setRole(entity.getRole());
+        dto.setCredit(entity.getCredit());
+        return dto;
+    }
 
-        for (char c : password.toCharArray()) {
-            if (Character.isLetter(c)) {
-                hasLetter = true;
-            } else if (Character.isDigit(c)) {
-                hasDigit = true;
+    @Override
+    @Transactional
+    public void setUserImage(Long userId, MultipartFile image) throws IOException {
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
+            String timestamp = now.format(formatter);
+            String filename = timestamp + "-" + image.getOriginalFilename();
+
+            String uploadDirectory = "/Users/M.shahrokhi/Documents/homeserviceimage/";
+
+            Path directoryPath = Paths.get(uploadDirectory);
+            if (!Files.exists(directoryPath)) {
+                Files.createDirectories(directoryPath);
             }
+
+            String filePath = uploadDirectory + filename;
+            image.transferTo(new File(filePath));
+
+            UserEntity user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResponseNotFoundException("User not found"));
+            user.setImagePath(filename);
+            userRepository.save(user);
+            log.info("Image uploaded and user updated successfully for user ID: {}", userId);
+        } catch (IOException e) {
+            log.error("IOException while saving image for user ID: {}", userId, e);
+            throw e;
+        } catch (Exception e) {
+            log.error("Unexpected error while saving image for user ID: {}", userId, e);
+            throw new RuntimeException("Failed to save image", e);
         }
-        return hasLetter && hasDigit;
     }
 }

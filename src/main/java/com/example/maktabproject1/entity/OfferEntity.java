@@ -3,13 +3,13 @@ package com.example.maktabproject1.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "offers")
 @Data
 public class OfferEntity {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,10 +25,9 @@ public class OfferEntity {
 
     private LocalDateTime offerDate;
 
-    private double suggestedPrice;
+    private BigDecimal suggestedPrice;
 
     private int executionTime;
 
     private LocalDateTime startTime;
-
 }
