@@ -6,7 +6,8 @@ import com.example.maktabproject1.entity.UserStatusEntity;
 import com.example.maktabproject1.exception.DuplicateResourceException;
 import com.example.maktabproject1.exception.ResponseNotFoundException;
 import com.example.maktabproject1.repository.UserRepository;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,14 +20,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository) {
@@ -48,15 +49,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserById(Long id) {
-        return mapEntityToDto(userRepository.findById(id)
-                .orElseThrow(() -> new ResponseNotFoundException("User not found: " + id)));
+        return userRepository.findById(id)
+                .map(this::mapEntityToDto)
+                .orElseThrow(() -> new ResponseNotFoundException("User not found: " + id));
     }
 
     @Override
     public List<UserDto> getAllUsers() {
-        List<UserDto> dtoList = new ArrayList<>();
-        userRepository.findAll().forEach(entity -> dtoList.add(mapEntityToDto(entity)));
-        return dtoList;
+        return userRepository.findAll().stream()
+                .map(this::mapEntityToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -87,6 +89,9 @@ public class UserServiceImpl implements UserService {
 
     private UserEntity mapDtoToEntity(UserDto dto) {
         UserEntity entity = new UserEntity();
+        if(dto == null){
+            throw new IllegalArgumentException("UserDto cannot be null");
+        }
         entity.setId(dto.getId());
         entity.setFirstName(dto.getFirstName());
         entity.setLastName(dto.getLastName());
@@ -99,6 +104,9 @@ public class UserServiceImpl implements UserService {
 
     private UserDto mapEntityToDto(UserEntity entity) {
         UserDto dto = new UserDto();
+        if(entity == null){
+            throw new IllegalArgumentException("UserEntity cannot be null");
+        }
         dto.setId(entity.getId());
         dto.setFirstName(entity.getFirstName());
         dto.setLastName(entity.getLastName());

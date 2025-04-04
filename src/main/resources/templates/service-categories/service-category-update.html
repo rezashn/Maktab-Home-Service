@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Update Category</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-3">
+  <form id="updateForm">
+    <div class="form-group">
+      <label>ID:</label>
+      <input type="number" id="categoryId" class="form-control">
+    </div>
+    <div class="form-group">
+      <label>Title:</label>
+      <input type="text" id="title" class="form-control">
+    </div>
+    <button type="button" class="btn btn-primary" onclick="updateCategory()">Update</button>
+  </form>
+</div>
+<script>
+  function updateCategory() {
+    fetch(`/service-categories/${document.getElementById('categoryId').value}`, {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({title: document.getElementById('title').value})
+    });
+  }
+</script>
+</body>
+</html>

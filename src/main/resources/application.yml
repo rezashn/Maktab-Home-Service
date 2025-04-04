@@ -14,4 +14,4 @@ spring:
       max-request-size: 300KB
       #todo: what if we want to update sth else like a video instead of an image!?
 server:
-  port: 8081
+  port: 8080

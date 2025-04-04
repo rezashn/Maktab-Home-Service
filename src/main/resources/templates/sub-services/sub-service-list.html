@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sub-Service List</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-3">
+  <ul id="subServiceList" class="list-group"></ul>
+</div>
+<script>
+  fetch('/sub-services')
+          .then(r => r.json())
+          .then(services => services.forEach(service => {
+            let li = document.createElement('li');
+            li.className = "list-group-item";
+            li.textContent = JSON.stringify(service);
+            document.getElementById('subServiceList').appendChild(li);
+          }));
+</script>
+</body>
+</html>

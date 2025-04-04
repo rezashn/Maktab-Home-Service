@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Delete Sub-Service</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-3">
+  <form id="deleteSubServiceForm">
+    <div class="form-group">
+      <label>ID:</label>
+      <input type="number" id="subServiceId" class="form-control">
+    </div>
+    <button type="button" class="btn btn-danger" onclick="deleteSubService()">Delete</button>
+  </form>
+</div>
+<script>
+  function deleteSubService() {
+    fetch(`/sub-services/${document.getElementById('subServiceId').value}`, {method: 'DELETE'});
+  }
+</script>
+</body>
+</html>

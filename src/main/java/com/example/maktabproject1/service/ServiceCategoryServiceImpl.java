@@ -4,7 +4,8 @@ import com.example.maktabproject1.dto.ServiceCategoryDto;
 import com.example.maktabproject1.entity.ServiceCategoryEntity;
 import com.example.maktabproject1.exception.ResponseNotFoundException;
 import com.example.maktabproject1.repository.ServiceCategoryRepository;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,10 +13,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 public class ServiceCategoryServiceImpl implements ServiceCategoryService {
 
     private final ServiceCategoryRepository serviceCategoryRepository;
+    private static final Logger log = LoggerFactory.getLogger(ServiceCategoryServiceImpl.class);
 
     @Autowired
     public ServiceCategoryServiceImpl(ServiceCategoryRepository serviceCategoryRepository) {
@@ -32,13 +33,16 @@ public class ServiceCategoryServiceImpl implements ServiceCategoryService {
 
     @Override
     public ServiceCategoryDto getServiceCategoryById(Long id) {
-        return mapEntityToDto(serviceCategoryRepository.findById(id)
-                .orElseThrow(() -> new ResponseNotFoundException("Service category not found: " + id)));
+        return serviceCategoryRepository.findById(id)
+                .map(this::mapEntityToDto)
+                .orElseThrow(() -> new ResponseNotFoundException("Service category not found: " + id));
     }
 
     @Override
     public List<ServiceCategoryDto> getAllServiceCategories() {
-        return serviceCategoryRepository.findAll().stream().map(this::mapEntityToDto).collect(Collectors.toList());
+        return serviceCategoryRepository.findAll().stream()
+                .map(this::mapEntityToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -63,6 +67,9 @@ public class ServiceCategoryServiceImpl implements ServiceCategoryService {
     }
 
     private ServiceCategoryEntity mapDtoToEntity(ServiceCategoryDto serviceCategoryDTO) {
+        if (serviceCategoryDTO == null) {
+            throw new IllegalArgumentException("ServiceCategoryDTO cannot be null");
+        }
         ServiceCategoryEntity serviceCategoryEntity = new ServiceCategoryEntity();
         serviceCategoryEntity.setId(serviceCategoryDTO.getId());
         serviceCategoryEntity.setName(serviceCategoryDTO.getName());
@@ -71,6 +78,9 @@ public class ServiceCategoryServiceImpl implements ServiceCategoryService {
     }
 
     private ServiceCategoryDto mapEntityToDto(ServiceCategoryEntity serviceCategoryEntity) {
+        if (serviceCategoryEntity == null) {
+            throw new IllegalArgumentException("ServiceCategoryEntity cannot be null");
+        }
         ServiceCategoryDto dto = new ServiceCategoryDto();
         dto.setId(serviceCategoryEntity.getId());
         dto.setName(serviceCategoryEntity.getName());

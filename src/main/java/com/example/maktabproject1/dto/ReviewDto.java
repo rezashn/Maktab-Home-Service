@@ -3,9 +3,8 @@ package com.example.maktabproject1.dto;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import java.util.Objects;
 
-@Data
 public class ReviewDto {
     private Long id;
 
@@ -17,4 +16,62 @@ public class ReviewDto {
     private int rating;
 
     private String comment;
+
+    public ReviewDto() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ReviewDto that = (ReviewDto) o;
+        return rating == that.rating && Objects.equals(id, that.id) && Objects.equals(orderId, that.orderId) && Objects.equals(comment, that.comment);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, orderId, rating, comment);
+    }
+
+    @Override
+    public String toString() {
+        return "ReviewDto{" +
+                "id=" + id +
+                ", orderId=" + orderId +
+                ", rating=" + rating +
+                ", comment='" + comment + '\'' +
+                '}';
+    }
 }

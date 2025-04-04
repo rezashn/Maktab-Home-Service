@@ -3,12 +3,11 @@ package com.example.maktabproject1.controller;
 import com.example.maktabproject1.dto.SpecialistDto;
 import com.example.maktabproject1.service.SpecialistService;
 import com.example.maktabproject1.service.SpecialistServiceImpl;
-import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,11 +16,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/specialists")
-@Slf4j
 public class SpecialistController {
 
     private final SpecialistService specialistService;
     private final SpecialistServiceImpl specialistServiceImpl;
+    private static final Logger log = LoggerFactory.getLogger(SpecialistController.class);
 
     @Autowired
     public SpecialistController(SpecialistService specialistService, SpecialistServiceImpl specialistServiceImpl) {
@@ -30,39 +29,68 @@ public class SpecialistController {
     }
 
     @PostMapping
-    public ResponseEntity<SpecialistDto> addSpecialist(@Valid @RequestBody SpecialistDto specialistDTO, BindingResult result) {
-        if (result.hasErrors()) {
-            return ResponseEntity.badRequest().build();
+    public ResponseEntity<SpecialistDto> addSpecialist(@RequestBody SpecialistDto specialistDTO) {
+        try {
+            log.info("Attempting to add specialist: {}", specialistDTO);
+            SpecialistDto addedSpecialist = specialistService.createSpecialist(specialistDTO);
+            log.info("Specialist added successfully: {}", addedSpecialist);
+            return ResponseEntity.status(HttpStatus.CREATED).body(addedSpecialist);
+        } catch (Exception e) {
+            log.error("Error adding specialist: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(null);
         }
-        SpecialistDto addedSpecialist = specialistService.createSpecialist(specialistDTO);
-        return new ResponseEntity<>(addedSpecialist, HttpStatus.CREATED);
     }
 
     @PutMapping("/{specialistId}")
-    public ResponseEntity<SpecialistDto> updateSpecialist(@PathVariable Long specialistId, @Valid @RequestBody SpecialistDto specialistDTO, BindingResult result) {
-        if (result.hasErrors()) {
-            return ResponseEntity.badRequest().build();
+    public ResponseEntity<SpecialistDto> updateSpecialist(@PathVariable Long specialistId, @RequestBody SpecialistDto specialistDTO) {
+        try {
+            log.info("Attempting to update specialist with ID: {}, data: {}", specialistId, specialistDTO);
+            SpecialistDto updatedSpecialist = specialistService.updateSpecialist(specialistId, specialistDTO);
+            log.info("Specialist updated successfully: {}", updatedSpecialist);
+            return ResponseEntity.ok(updatedSpecialist);
+        } catch (Exception e) {
+            log.error("Error updating specialist: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(null);
         }
-        SpecialistDto updatedSpecialist = specialistService.updateSpecialist(specialistId, specialistDTO);
-        return new ResponseEntity<>(updatedSpecialist, HttpStatus.OK);
     }
 
     @DeleteMapping("/{specialistId}")
     public ResponseEntity<Void> deleteSpecialist(@PathVariable Long specialistId) {
-        specialistService.deleteSpecialist(specialistId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        try {
+            log.info("Attempting to delete specialist with ID: {}", specialistId);
+            specialistService.deleteSpecialist(specialistId);
+            log.info("Specialist deleted successfully: {}", specialistId);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            log.error("Error deleting specialist: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping("/{specialistId}")
     public ResponseEntity<SpecialistDto> getSpecialistById(@PathVariable Long specialistId) {
-        SpecialistDto specialist = specialistService.getSpecialistById(specialistId);
-        return new ResponseEntity<>(specialist, HttpStatus.OK);
+        try {
+            log.info("Fetching specialist by ID: {}", specialistId);
+            SpecialistDto specialist = specialistService.getSpecialistById(specialistId);
+            log.info("Specialist found: {}", specialist);
+            return ResponseEntity.ok(specialist);
+        } catch (Exception e) {
+            log.error("Error fetching specialist: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping
     public ResponseEntity<List<SpecialistDto>> getAllSpecialists() {
-        List<SpecialistDto> specialists = specialistService.getAllSpecialists();
-        return new ResponseEntity<>(specialists, HttpStatus.OK);
+        try {
+            log.info("Fetching all specialists.");
+            List<SpecialistDto> specialists = specialistService.getAllSpecialists();
+            log.info("Found {} specialists.", specialists.size());
+            return ResponseEntity.ok(specialists);
+        } catch (Exception e) {
+            log.error("Error fetching all specialists: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PostMapping("/{specialistId}/image")
@@ -71,6 +99,7 @@ public class SpecialistController {
             @RequestParam("image") MultipartFile image
     ) {
         try {
+            log.info("Attempting to upload image for specialist ID: {}", specialistId);
             specialistServiceImpl.setSpecialistImage(specialistId, image);
             log.info("Image uploaded successfully for specialist ID: {}", specialistId);
             return ResponseEntity.ok("Image uploaded successfully.");

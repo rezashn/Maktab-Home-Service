@@ -2,26 +2,23 @@ package com.example.maktabproject1.controller;
 
 import com.example.maktabproject1.dto.UserDto;
 import com.example.maktabproject1.service.UserService;
-import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/users")
-@Slf4j
 public class UserController {
 
     private final UserService userService;
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     public UserController(UserService userService) {
@@ -29,45 +26,68 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserDto> registerUser(@Valid @RequestBody UserDto userDTO, BindingResult result) {
-        if (result.hasErrors()) {
-            List<String> errors = new ArrayList<>();
-            for (FieldError error : result.getFieldErrors()) {
-                errors.add(error.getField() + ": " + error.getDefaultMessage());
-            }
-            log.warn("Validation errors: {}", errors);
+    public ResponseEntity<UserDto> registerUser(@RequestBody UserDto userDTO) {
+        try {
+            log.info("Attempting to register user: {}", userDTO);
+            UserDto registeredUser = userService.registerUser(userDTO);
+            log.info("User registered successfully: {}", registeredUser);
+            return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
+        } catch (Exception e) {
+            log.error("Error registering user: {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body(null);
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.registerUser(userDTO));
     }
 
     @GetMapping("/{userId}")
     public ResponseEntity<UserDto> getUserById(@PathVariable Long userId) {
-        return ResponseEntity.ok(userService.getUserById(userId));
+        log.info("Fetching user by ID: {}", userId);
+        try {
+            UserDto userDto = userService.getUserById(userId);
+            log.info("User found: {}", userDto);
+            return ResponseEntity.ok(userDto);
+        } catch (Exception e) {
+            log.error("Error fetching user: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping
     public ResponseEntity<List<UserDto>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+        log.info("Fetching all users.");
+        try {
+            List<UserDto> userDtos = userService.getAllUsers();
+            log.info("Found {} users.", userDtos.size());
+            return ResponseEntity.ok(userDtos);
+        } catch (Exception e) {
+            log.error("Error fetching all users: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable Long userId, @Valid @RequestBody UserDto userDTO, BindingResult result) {
-        if (result.hasErrors()) {
-            List<String> errors = new ArrayList<>();
-            for (FieldError error : result.getFieldErrors()) {
-                errors.add(error.getField() + ": " + error.getDefaultMessage());
-            }
-            log.warn("Validation errors: {}", errors);
+    public ResponseEntity<UserDto> updateUser(@PathVariable Long userId, @RequestBody UserDto userDTO) {
+        try {
+            log.info("Attempting to update user with ID: {}, data: {}", userId, userDTO);
+            UserDto updatedUser = userService.updateUser(userId, userDTO);
+            log.info("User updated successfully: {}", updatedUser);
+            return ResponseEntity.ok(updatedUser);
+        } catch (Exception e) {
+            log.error("Error updating user: {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body(null);
         }
-        return ResponseEntity.ok(userService.updateUser(userId, userDTO));
     }
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
-        userService.deleteUser(userId);
-        return ResponseEntity.noContent().build();
+        log.info("Attempting to delete user with ID: {}", userId);
+        try {
+            userService.deleteUser(userId);
+            log.info("User deleted successfully: {}", userId);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            log.error("Error deleting user: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PostMapping("/{userId}/image")
@@ -76,6 +96,7 @@ public class UserController {
             @RequestParam("image") MultipartFile image
     ) {
         try {
+            log.info("Attempting to upload image for user ID: {}", userId);
             userService.setUserImage(userId, image);
             log.info("Image uploaded successfully for user ID: {}", userId);
             return ResponseEntity.ok("Image uploaded successfully.");

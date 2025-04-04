@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Delete Specialist</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+  <h2>Delete Specialist</h2>
+  <form id="deleteForm">
+    <div class="form-group">
+      <label>Specialist ID:</label>
+      <input type="number" id="specialistId" class="form-control">
+    </div>
+    <button type="button" class="btn btn-danger" onclick="deleteSpecialist()">Delete</button>
+  </form>
+</div>
+<script>
+  function deleteSpecialist() {
+    let specialistId = document.getElementById('specialistId').value;
+    fetch(`/specialists/${specialistId}`, { method: 'DELETE' });
+  }
+</script>
+</body>
+</html>

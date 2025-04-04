@@ -1,0 +1,27 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete User</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Delete User</h2>
+    <form id="deleteForm">
+        <div class="form-group">
+            <label>User ID:</label>
+            <input type="number" id="userId" class="form-control">
+        </div>
+        <button type="button" class="btn btn-danger" onclick="deleteUser()">Delete</button>
+    </form>
+</div>
+<script>
+    function deleteUser() {
+        let userId = document.getElementById('userId').value;
+        fetch(`/users/${userId}`, { method: 'DELETE' });
+    }
+</script>
+</body>
+</html>

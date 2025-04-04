@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Order List</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-3">
+  <ul id="orderList" class="list-group"></ul>
+</div>
+<script>
+  fetch('/orders')
+          .then(r => r.json())
+          .then(orders => orders.forEach(o => {
+            let li = document.createElement('li');
+            li.className = "list-group-item";
+            li.textContent = JSON.stringify(o);
+            document.getElementById('orderList').appendChild(li);
+          }));
+</script>
+</body>
+</html>

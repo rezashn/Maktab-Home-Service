@@ -7,7 +7,8 @@ import com.example.maktabproject1.exception.DuplicateResourceException;
 import com.example.maktabproject1.exception.ResponseNotFoundException;
 import com.example.maktabproject1.repository.ServiceCategoryRepository;
 import com.example.maktabproject1.repository.SubServiceRepository;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,11 +16,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Slf4j
 public class SubServiceServiceImpl implements SubServiceService {
 
     private final SubServiceRepository subServiceRepository;
     private final ServiceCategoryRepository serviceCategoryRepository;
+    private static final Logger log = LoggerFactory.getLogger(SubServiceServiceImpl.class);
 
     @Autowired
     public SubServiceServiceImpl(SubServiceRepository subServiceRepository, ServiceCategoryRepository serviceCategoryRepository) {
@@ -44,7 +45,10 @@ public class SubServiceServiceImpl implements SubServiceService {
     @Override
     public List<SubServiceDto> getAllSubServices() {
         List<SubServiceDto> dtoList = new ArrayList<>();
-        subServiceRepository.findAll().forEach(entity -> dtoList.add(mapEntityToDto(entity)));
+        List<SubServiceEntity> entities = subServiceRepository.findAll();
+        for (SubServiceEntity entity : entities) {
+            dtoList.add(mapEntityToDto(entity));
+        }
         return dtoList;
     }
 

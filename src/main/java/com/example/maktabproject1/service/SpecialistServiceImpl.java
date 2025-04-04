@@ -8,7 +8,8 @@ import com.example.maktabproject1.exception.ResponseNotFoundException;
 import com.example.maktabproject1.repository.SpecialistRepository;
 import com.example.maktabproject1.repository.SubServiceRepository;
 import com.example.maktabproject1.repository.UserRepository;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,12 +25,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Slf4j
 public class SpecialistServiceImpl implements SpecialistService {
 
     private final SpecialistRepository specialistRepository;
     private final UserRepository userRepository;
     private final SubServiceRepository subServiceRepository;
+    private static final Logger log = LoggerFactory.getLogger(SpecialistServiceImpl.class);
 
     @Autowired
     public SpecialistServiceImpl(SpecialistRepository specialistRepository, UserRepository userRepository, SubServiceRepository subServiceRepository) {
@@ -52,7 +53,10 @@ public class SpecialistServiceImpl implements SpecialistService {
     @Override
     public List<SpecialistDto> getAllSpecialists() {
         List<SpecialistDto> dtoList = new ArrayList<>();
-        specialistRepository.findAll().forEach(entity -> dtoList.add(mapEntityToDto(entity)));
+        List<SpecialistEntity> entities = specialistRepository.findAll();
+        for (SpecialistEntity entity : entities) {
+            dtoList.add(mapEntityToDto(entity));
+        }
         return dtoList;
     }
 
@@ -87,8 +91,10 @@ public class SpecialistServiceImpl implements SpecialistService {
         entity.setRating(dto.getRating());
         if (dto.getSubServiceIds() != null) {
             List<SubServiceEntity> services = new ArrayList<>();
-            dto.getSubServiceIds().forEach(id -> services.add(subServiceRepository.findById(id)
-                    .orElseThrow(() -> new ResponseNotFoundException("SubService not found: " + id))));
+            for (Long id : dto.getSubServiceIds()) {
+                services.add(subServiceRepository.findById(id)
+                        .orElseThrow(() -> new ResponseNotFoundException("SubService not found: " + id)));
+            }
             entity.setSubServices(services);
         }
         return entity;
@@ -102,7 +108,9 @@ public class SpecialistServiceImpl implements SpecialistService {
         dto.setRating(entity.getRating());
         if (entity.getSubServices() != null) {
             List<Long> ids = new ArrayList<>();
-            entity.getSubServices().forEach(s -> ids.add(s.getId()));
+            for (SubServiceEntity s : entity.getSubServices()) {
+                ids.add(s.getId());
+            }
             dto.setSubServiceIds(ids);
         }
         return dto;

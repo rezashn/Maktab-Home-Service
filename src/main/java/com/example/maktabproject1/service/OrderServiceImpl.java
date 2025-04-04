@@ -6,23 +6,24 @@ import com.example.maktabproject1.entity.OrderStatusEntity;
 import com.example.maktabproject1.entity.SpecialistEntity;
 import com.example.maktabproject1.exception.ResponseNotFoundException;
 import com.example.maktabproject1.repository.OrderRepository;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final UserService userService;
     private final SubServiceService subServiceService;
     private final SpecialistService specialistService;
+    private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository,
@@ -74,9 +75,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderDto> getAllOrders() {
-        List<OrderDto> dtoList = new ArrayList<>();
-        orderRepository.findAll().forEach(entity -> dtoList.add(mapEntityToDto(entity)));
-        return dtoList;
+        return orderRepository.findAll().stream()
+                .map(this::mapEntityToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -103,6 +104,9 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderEntity mapDtoToEntity(OrderDto dto) {
         OrderEntity entity = new OrderEntity();
+        if (dto == null) {
+            throw new IllegalArgumentException("Order DTO cannot be null");
+        }
         entity.setId(dto.getId());
         entity.setCustomer(userService.getUserEntityById(dto.getCustomerId()));
         entity.setSubService(subServiceService.getSubServiceEntityById(dto.getSubServiceId()));
@@ -110,7 +114,14 @@ public class OrderServiceImpl implements OrderService {
         entity.setSuggestedPrice(dto.getProposedPrice());
         entity.setOrderDate(dto.getOrderDate());
         entity.setAddress(dto.getAddress());
-        entity.setStatus(OrderStatusEntity.valueOf(dto.getOrderStatus()));
+        if(dto.getOrderStatus() == null){
+            throw new IllegalArgumentException("Order status cannot be null");
+        }
+        try {
+            entity.setStatus(OrderStatusEntity.valueOf(dto.getOrderStatus()));
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid order status: " + dto.getOrderStatus());
+        }
         if (dto.getSpecialistId() != null) {
             entity.setSpecialist(specialistService.getSpecialistEntityById(dto.getSpecialistId()));
         }
@@ -119,6 +130,9 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderDto mapEntityToDto(OrderEntity entity) {
         OrderDto dto = new OrderDto();
+        if(entity == null){
+            throw new IllegalArgumentException("Order Entity cannot be null");
+        }
         dto.setId(entity.getId());
         dto.setCustomerId(entity.getCustomer().getId());
         dto.setSubServiceId(entity.getSubService().getId());

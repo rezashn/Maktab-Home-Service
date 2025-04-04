@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Category List</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-3">
+  <ul id="categoryList" class="list-group"></ul>
+</div>
+<script>
+  fetch('/service-categories')
+          .then(r => r.json())
+          .then(cs => cs.forEach(c => {
+            let li = document.createElement('li');
+            li.className = "list-group-item";
+            li.textContent = c.title;
+            document.getElementById('categoryList').appendChild(li);
+          }));
+</script>
+</body>
+</html>
