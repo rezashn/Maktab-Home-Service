@@ -29,11 +29,9 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     private UserRoleType role;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private UserStatusType status;
 
-    @Column(nullable = false)
     private LocalDateTime registrationDate;
 
     @Column(name = "image_path", length = 255)
