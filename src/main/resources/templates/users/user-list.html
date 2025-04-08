@@ -21,7 +21,7 @@
   </table>
 </div>
 <script>
-  fetch('/users')
+  fetch('http://localhost:8080/web_controller/users/user-list')
           .then(response => response.json())
           .then(users => {
             let tableBody = document.getElementById('userTableBody');

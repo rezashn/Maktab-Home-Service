@@ -2,8 +2,11 @@ package com.example.maktabproject1.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
+@RequestMapping("web_controller")
 public class WebController {
 
     @GetMapping("/users/update")
@@ -42,7 +45,7 @@ public class WebController {
     @GetMapping("/specialists/update")
     public String specialistUpdate() { return "specialists/specialist-update"; }
 
-    @GetMapping("/specialists/list")
+    @GetMapping("/specialists/listTest")
     public String specialistList() { return "specialists/specialist-list"; }
 
     @GetMapping("/specialists/image-upload")

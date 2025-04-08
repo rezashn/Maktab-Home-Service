@@ -3,6 +3,7 @@ package com.example.maktabproject1.controller;
 import com.example.maktabproject1.dto.SpecialistDto;
 import com.example.maktabproject1.service.SpecialistService;
 import com.example.maktabproject1.service.SpecialistServiceImpl;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,17 +20,15 @@ import java.util.List;
 public class SpecialistController {
 
     private final SpecialistService specialistService;
-    private final SpecialistServiceImpl specialistServiceImpl;
     private static final Logger log = LoggerFactory.getLogger(SpecialistController.class);
 
     @Autowired
-    public SpecialistController(SpecialistService specialistService, SpecialistServiceImpl specialistServiceImpl) {
+    public SpecialistController(SpecialistService specialistService) {
         this.specialistService = specialistService;
-        this.specialistServiceImpl = specialistServiceImpl;
     }
 
     @PostMapping
-    public ResponseEntity<SpecialistDto> addSpecialist(@RequestBody SpecialistDto specialistDTO) {
+    public ResponseEntity<SpecialistDto> addSpecialist(@Valid @RequestBody SpecialistDto specialistDTO) {
         try {
             log.info("Attempting to add specialist: {}", specialistDTO);
             SpecialistDto addedSpecialist = specialistService.createSpecialist(specialistDTO);
@@ -42,7 +41,7 @@ public class SpecialistController {
     }
 
     @PutMapping("/{specialistId}")
-    public ResponseEntity<SpecialistDto> updateSpecialist(@PathVariable Long specialistId, @RequestBody SpecialistDto specialistDTO) {
+    public ResponseEntity<SpecialistDto> updateSpecialist(@PathVariable Long specialistId, @Valid @RequestBody SpecialistDto specialistDTO) {
         try {
             log.info("Attempting to update specialist with ID: {}, data: {}", specialistId, specialistDTO);
             SpecialistDto updatedSpecialist = specialistService.updateSpecialist(specialistId, specialistDTO);
@@ -100,7 +99,7 @@ public class SpecialistController {
     ) {
         try {
             log.info("Attempting to upload image for specialist ID: {}", specialistId);
-            specialistServiceImpl.setSpecialistImage(specialistId, image);
+            specialistService.setSpecialistImage(specialistId, image);
             log.info("Image uploaded successfully for specialist ID: {}", specialistId);
             return ResponseEntity.ok("Image uploaded successfully.");
         } catch (IOException e) {

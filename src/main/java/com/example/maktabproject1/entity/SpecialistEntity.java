@@ -28,6 +28,9 @@ public class SpecialistEntity {
             inverseJoinColumns = @JoinColumn(name = "sub_service_id"))
     private List<SubServiceEntity> subServices;
 
+    @OneToMany(mappedBy = "specialist")
+    private List<OfferEntity> offers;
+
     public SpecialistEntity() {
     }
 
@@ -71,27 +74,23 @@ public class SpecialistEntity {
         this.subServices = subServices;
     }
 
+    public List<OfferEntity> getOffers() {
+        return offers;
+    }
+    public void setOffers(List<OfferEntity> offers) {
+        this.offers = offers;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SpecialistEntity that = (SpecialistEntity) o;
-        return Objects.equals(id, that.id) && Objects.equals(user, that.user) && Objects.equals(imagePath, that.imagePath) && Objects.equals(rating, that.rating) && Objects.equals(subServices, that.subServices);
+        return Objects.equals(id, that.id) && Objects.equals(user, that.user) && Objects.equals(imagePath, that.imagePath) && Objects.equals(rating, that.rating) && Objects.equals(subServices, that.subServices) && Objects.equals(offers, that.offers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user, imagePath, rating, subServices);
-    }
-
-    @Override
-    public String toString() {
-        return "SpecialistEntity{" +
-                "id=" + id +
-                ", user=" + user +
-                ", imagePath='" + imagePath + '\'' +
-                ", rating=" + rating +
-                ", subServices=" + subServices +
-                '}';
+        return Objects.hash(id, user, imagePath, rating, subServices, offers);
     }
 }

@@ -1,6 +1,8 @@
 package com.example.maktabproject1.dto;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -22,6 +24,7 @@ public class OrderDto {
 
     private LocalDateTime orderDate;
 
+    @PositiveOrZero(message = "Proposed price cannot be negative")
     private BigDecimal proposedPrice;
 
     private String orderStatus;

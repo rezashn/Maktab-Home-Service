@@ -2,6 +2,8 @@ package com.example.maktabproject1.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -17,6 +19,9 @@ public class ServiceCategoryEntity {
     private String name;
 
     private String description;
+
+    @OneToMany(mappedBy = "serviceCategory", cascade = CascadeType.REMOVE)
+    private List<SubServiceEntity> subServices;
 
     public ServiceCategoryEntity() {
     }
@@ -43,6 +48,13 @@ public class ServiceCategoryEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<SubServiceEntity> getSubServices() {
+        return subServices;
+    }
+    public void setSubServices(List<SubServiceEntity> subServices) {
+        this.subServices = subServices;
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.example.maktabproject1.dto;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 import java.math.BigDecimal;
 import java.util.Objects;
 
@@ -8,8 +10,10 @@ public class SubServiceDto {
     private Long id;
 
     @NotNull(message = "Name is required")
+    @Size(min = 3, max = 100, message = "Name must be between 3 and 100 characters")
     private String name;
 
+    @Size(max = 500, message = "Description must be 500 characters or less")
     private String description;
 
     @NotNull(message = "Service category ID is required")

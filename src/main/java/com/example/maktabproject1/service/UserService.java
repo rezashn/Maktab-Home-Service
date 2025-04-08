@@ -8,11 +8,18 @@ import java.io.IOException;
 import java.util.List;
 
 public interface UserService {
+
     UserDto registerUser(UserDto userDTO);
+
     UserDto getUserById(Long userId);
+
     List<UserDto> getAllUsers();
+
     UserDto updateUser(Long userId, UserDto userDTO);
+
     void deleteUser(Long userId);
+
     UserEntity getUserEntityById(Long userId);
+
     void setUserImage(Long userId, MultipartFile image) throws IOException;
 }

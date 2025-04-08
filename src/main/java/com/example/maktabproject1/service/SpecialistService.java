@@ -8,11 +8,18 @@ import java.io.IOException;
 import java.util.List;
 
 public interface SpecialistService {
+
         SpecialistDto createSpecialist(SpecialistDto specialistDTO);
+
         SpecialistDto getSpecialistById(Long id);
+
         List<SpecialistDto> getAllSpecialists();
+
         SpecialistDto updateSpecialist(Long id, SpecialistDto specialistDTO);
+
         void deleteSpecialist(Long id);
+
         SpecialistEntity getSpecialistEntityById(Long specialistId);
+
         void setSpecialistImage(Long specialistId, MultipartFile image) throws IOException;
 }

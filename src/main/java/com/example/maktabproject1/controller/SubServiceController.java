@@ -2,6 +2,7 @@ package com.example.maktabproject1.controller;
 
 import com.example.maktabproject1.dto.SubServiceDto;
 import com.example.maktabproject1.service.SubServiceServiceImpl;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class SubServiceController {
     }
 
     @PostMapping
-    public ResponseEntity<SubServiceDto> createSubService(@RequestBody SubServiceDto dto) {
+    public ResponseEntity<SubServiceDto> createSubService(@Valid @RequestBody SubServiceDto dto) {
         try {
             log.info("Attempting to create a sub-service: {}", dto);
             SubServiceDto createdSubService = subServiceService.createSubService(dto);
@@ -63,7 +64,7 @@ public class SubServiceController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SubServiceDto> updateSubService(@PathVariable Long id, @RequestBody SubServiceDto dto) {
+    public ResponseEntity<SubServiceDto> updateSubService(@PathVariable Long id, @Valid @RequestBody SubServiceDto dto) {
         log.info("Attempting to update sub-service with ID: {}, data: {}", id, dto);
         try {
             SubServiceDto updatedSubService = subServiceService.updateSubService(id, dto);

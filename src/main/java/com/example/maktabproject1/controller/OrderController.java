@@ -1,8 +1,9 @@
 package com.example.maktabproject1.controller;
 
 import com.example.maktabproject1.dto.OrderDto;
-import com.example.maktabproject1.entity.OrderStatusEntity;
+import com.example.maktabproject1.entity.OrderStatusType;
 import com.example.maktabproject1.service.OrderService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<OrderDto> createOrder(@RequestBody OrderDto orderDTO) {
+    public ResponseEntity<OrderDto> createOrder(@Valid @RequestBody OrderDto orderDTO) {
         try {
             log.info("Attempting to create order: {}", orderDTO);
             OrderDto createdOrder = orderService.createOrder(orderDTO);
@@ -38,7 +39,7 @@ public class OrderController {
     }
 
     @PutMapping("/{orderId}")
-    public ResponseEntity<OrderDto> updateOrder(@PathVariable Long orderId, @RequestBody OrderDto orderDTO) {
+    public ResponseEntity<OrderDto> updateOrder(@PathVariable Long orderId, @Valid @RequestBody OrderDto orderDTO) {
         try {
             log.info("Attempting to update order with ID: {}, data: {}", orderId, orderDTO);
             OrderDto updatedOrder = orderService.updateOrder(orderId, orderDTO);
@@ -90,7 +91,7 @@ public class OrderController {
     }
 
     @PutMapping("/{orderId}/status")
-    public ResponseEntity<OrderDto> updateOrderStatus(@PathVariable Long orderId, @RequestBody OrderStatusEntity newStatus) {
+    public ResponseEntity<OrderDto> updateOrderStatus(@PathVariable Long orderId, @RequestBody OrderStatusType newStatus) {
         try {
             log.info("Attempting to update order status with ID: {}, new status: {}", orderId, newStatus);
             OrderDto updatedOrder = orderService.updateOrderStatus(orderId, newStatus);

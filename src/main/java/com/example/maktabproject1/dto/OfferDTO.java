@@ -1,6 +1,8 @@
 package com.example.maktabproject1.dto;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -14,6 +16,7 @@ public class OfferDTO {
     @NotNull(message = "Order ID is required")
     private Long orderId;
 
+    @PositiveOrZero(message = "Price cannot be negative")
     private BigDecimal proposedPrice;
 
     private LocalDateTime offerDate;

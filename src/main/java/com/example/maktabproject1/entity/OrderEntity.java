@@ -32,7 +32,7 @@ public class OrderEntity {
     private String address;
 
     @Enumerated(EnumType.STRING)
-    private OrderStatusEntity status;
+    private OrderStatusType status;
 
     @ManyToOne
     @JoinColumn(name = "specialist_id")
@@ -105,11 +105,11 @@ public class OrderEntity {
         this.address = address;
     }
 
-    public OrderStatusEntity getStatus() {
+    public OrderStatusType getStatus() {
         return status;
     }
 
-    public void setStatus(OrderStatusEntity status) {
+    public void setStatus(OrderStatusType status) {
         this.status = status;
     }
 

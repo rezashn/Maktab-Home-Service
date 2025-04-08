@@ -1,7 +1,7 @@
 package com.example.maktabproject1.service;
 
 import com.example.maktabproject1.dto.OrderDto;
-import com.example.maktabproject1.entity.OrderStatusEntity;
+import com.example.maktabproject1.entity.OrderStatusType;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public interface OrderService {
 
     List<OrderDto> getAllOrders();
 
-    OrderDto updateOrderStatus(Long orderId, OrderStatusEntity newStatus);
+    OrderDto updateOrderStatus(Long orderId, OrderStatusType newStatus);
 
     OrderDto assignSpecialistToOrder(Long orderId, Long specialistId);
 }

@@ -2,6 +2,7 @@ package com.example.maktabproject1.controller;
 
 import com.example.maktabproject1.dto.UserDto;
 import com.example.maktabproject1.service.UserService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserDto> registerUser(@RequestBody UserDto userDTO) {
+    public ResponseEntity<UserDto> registerUser(@Valid @RequestBody UserDto userDTO) {
         try {
             log.info("Attempting to register user: {}", userDTO);
             UserDto registeredUser = userService.registerUser(userDTO);
@@ -65,7 +66,7 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable Long userId, @RequestBody UserDto userDTO) {
+    public ResponseEntity<UserDto> updateUser(@PathVariable Long userId, @Valid @RequestBody UserDto userDTO) {
         try {
             log.info("Attempting to update user with ID: {}, data: {}", userId, userDTO);
             UserDto updatedUser = userService.updateUser(userId, userDTO);

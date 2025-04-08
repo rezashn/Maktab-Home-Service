@@ -2,6 +2,7 @@ package com.example.maktabproject1.controller;
 
 import com.example.maktabproject1.dto.ServiceCategoryDto;
 import com.example.maktabproject1.service.ServiceCategoryService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class ServiceCategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<ServiceCategoryDto> createServiceCategory(@RequestBody ServiceCategoryDto serviceCategoryDTO) {
+    public ResponseEntity<ServiceCategoryDto> createServiceCategory(@Valid @RequestBody ServiceCategoryDto serviceCategoryDTO) {
         try {
             log.info("Attempting to create service category: {}", serviceCategoryDTO);
             ServiceCategoryDto createdCategory = serviceCategoryService.createServiceCategory(serviceCategoryDTO);
@@ -63,7 +64,7 @@ public class ServiceCategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ServiceCategoryDto> updateServiceCategory(@PathVariable Long id, @RequestBody ServiceCategoryDto serviceCategoryDTO) {
+    public ResponseEntity<ServiceCategoryDto> updateServiceCategory(@PathVariable Long id, @Valid @RequestBody ServiceCategoryDto serviceCategoryDTO) {
         try {
             log.info("Attempting to update service category with ID: {}, data: {}", id, serviceCategoryDTO);
             ServiceCategoryDto updatedCategory = serviceCategoryService.updateServiceCategory(id, serviceCategoryDTO);

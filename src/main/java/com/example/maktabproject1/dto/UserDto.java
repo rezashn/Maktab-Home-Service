@@ -1,6 +1,7 @@
 package com.example.maktabproject1.dto;
 
-import com.example.maktabproject1.entity.UserRoleEntity;
+import com.example.maktabproject1.entity.UserRoleType;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -9,6 +10,7 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 public class UserDto {
+
     private Long id;
 
     @NotBlank(message = "First name is required")
@@ -18,6 +20,7 @@ public class UserDto {
     private String lastName;
 
     @NotBlank(message = "Email is required")
+    @Email(message = "Invalid email format")
     private String email;
 
     @Size(min = 8, message = "Password must be at least 8 characters")
@@ -25,7 +28,7 @@ public class UserDto {
     private String password;
 
     @NotNull(message = "Role is required")
-    private UserRoleEntity role;
+    private UserRoleType role;
 
     @Size(max = 255)
     private String imagePath;
@@ -75,11 +78,11 @@ public class UserDto {
         this.password = password;
     }
 
-    public UserRoleEntity getRole() {
+    public UserRoleType getRole() {
         return role;
     }
 
-    public void setRole(UserRoleEntity role) {
+    public void setRole(UserRoleType role) {
         this.role = role;
     }
 

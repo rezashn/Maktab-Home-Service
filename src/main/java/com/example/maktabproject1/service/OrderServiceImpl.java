@@ -2,15 +2,15 @@ package com.example.maktabproject1.service;
 
 import com.example.maktabproject1.dto.OrderDto;
 import com.example.maktabproject1.entity.OrderEntity;
-import com.example.maktabproject1.entity.OrderStatusEntity;
+import com.example.maktabproject1.entity.OrderStatusType;
 import com.example.maktabproject1.entity.SpecialistEntity;
+import com.example.maktabproject1.exception.InvalidOrderStatusException;
 import com.example.maktabproject1.exception.ResponseNotFoundException;
 import com.example.maktabproject1.repository.OrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,10 +37,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Transactional
     public OrderDto createOrder(OrderDto dto) {
         OrderEntity entity = mapDtoToEntity(dto);
-        entity.setStatus(OrderStatusEntity.WAITING_FOR_OFFER);
+        entity.setStatus(OrderStatusType.WAITING_FOR_OFFER);
         entity.setOrderDate(LocalDateTime.now());
         OrderEntity savedEntity = orderRepository.save(entity);
         log.info("Order created with ID: {}", savedEntity.getId());
@@ -48,7 +47,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Transactional
     public OrderDto updateOrder(Long orderId, OrderDto dto) {
         OrderEntity existingOrder = getOrderEntityById(orderId);
         OrderEntity updatedOrder = mapDtoToEntity(dto);
@@ -59,7 +57,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Transactional
     public void deleteOrder(Long orderId) {
         if (!orderRepository.existsById(orderId)) {
             throw new ResponseNotFoundException("ORDER NOT FOUND");
@@ -81,8 +78,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Transactional
-    public OrderDto updateOrderStatus(Long orderId, OrderStatusEntity newStatus) {
+    public OrderDto updateOrderStatus(Long orderId, OrderStatusType newStatus) {
         OrderEntity order = getOrderEntityById(orderId);
         order.setStatus(newStatus);
         OrderEntity updatedOrder = orderRepository.save(order);
@@ -91,12 +87,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Transactional
     public OrderDto assignSpecialistToOrder(Long orderId, Long specialistId) {
         OrderEntity order = getOrderEntityById(orderId);
         SpecialistEntity specialist = specialistService.getSpecialistEntityById(specialistId);
         order.setSpecialist(specialist);
-        order.setStatus(OrderStatusEntity.SPECIALIST_ON_THE_WAY);
+        order.setStatus(OrderStatusType.SPECIALIST_ON_THE_WAY);
         OrderEntity updatedOrder = orderRepository.save(order);
         log.info("Specialist assigned to order ID: {}", orderId);
         return mapEntityToDto(updatedOrder);
@@ -114,13 +109,13 @@ public class OrderServiceImpl implements OrderService {
         entity.setSuggestedPrice(dto.getProposedPrice());
         entity.setOrderDate(dto.getOrderDate());
         entity.setAddress(dto.getAddress());
-        if(dto.getOrderStatus() == null){
+        if (dto.getOrderStatus() == null) {
             throw new IllegalArgumentException("Order status cannot be null");
         }
         try {
-            entity.setStatus(OrderStatusEntity.valueOf(dto.getOrderStatus()));
+            entity.setStatus(OrderStatusType.valueOf(dto.getOrderStatus()));
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid order status: " + dto.getOrderStatus());
+            throw new InvalidOrderStatusException("Invalid order status: " + dto.getOrderStatus());
         }
         if (dto.getSpecialistId() != null) {
             entity.setSpecialist(specialistService.getSpecialistEntityById(dto.getSpecialistId()));
@@ -130,7 +125,7 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderDto mapEntityToDto(OrderEntity entity) {
         OrderDto dto = new OrderDto();
-        if(entity == null){
+        if (entity == null) {
             throw new IllegalArgumentException("Order Entity cannot be null");
         }
         dto.setId(entity.getId());

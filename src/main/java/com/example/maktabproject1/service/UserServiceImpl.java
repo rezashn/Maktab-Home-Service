@@ -2,7 +2,7 @@ package com.example.maktabproject1.service;
 
 import com.example.maktabproject1.dto.UserDto;
 import com.example.maktabproject1.entity.UserEntity;
-import com.example.maktabproject1.entity.UserStatusEntity;
+import com.example.maktabproject1.entity.UserStatusType;
 import com.example.maktabproject1.exception.DuplicateResourceException;
 import com.example.maktabproject1.exception.ResponseNotFoundException;
 import com.example.maktabproject1.repository.UserRepository;
@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -40,9 +39,10 @@ public class UserServiceImpl implements UserService {
             throw new DuplicateResourceException("Email already exists");
         }
         UserEntity entity = mapDtoToEntity(dto);
-        entity.setStatus(UserStatusEntity.NEW);
+        entity.setStatus(UserStatusType.NEW);
         entity.setRegistrationDate(LocalDateTime.now());
         UserEntity savedEntity = userRepository.save(entity);
+
         log.info("User registered with ID: {}", savedEntity.getId());
         return mapEntityToDto(savedEntity);
     }
@@ -62,7 +62,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public UserDto updateUser(Long id, UserDto dto) {
         UserEntity entity = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseNotFoundException("User not found: " + id));
@@ -118,7 +117,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public void setUserImage(Long userId, MultipartFile image) throws IOException {
         try {
             LocalDateTime now = LocalDateTime.now();

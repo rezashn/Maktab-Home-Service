@@ -127,11 +127,15 @@ public class SpecialistServiceImpl implements SpecialistService {
             String uploadDirectory = "/Users/M.Shahrokhi/Documents/homeServiceImage/";
 
             Path directoryPath = Paths.get(uploadDirectory);
-            if (!Files.exists(directoryPath)) {
-                Files.createDirectories(directoryPath);
-            }
+//            if (!Files.exists(directoryPath)) {
+//                Files.createDirectories(directoryPath);
+//            }
+//
+//            String filePath = uploadDirectory + filename;
+//            image.transferTo(new File(filePath));
 
-            String filePath = uploadDirectory + filename;
+            Files.createDirectories(directoryPath);
+            String filePath = directoryPath.resolve(filename).toString();
             image.transferTo(new File(filePath));
 
             SpecialistEntity specialist = specialistRepository.findById(specialistId)

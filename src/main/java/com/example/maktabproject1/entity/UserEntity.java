@@ -27,11 +27,11 @@ public class UserEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private UserRoleEntity role;
+    private UserRoleType role;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private UserStatusEntity status;
+    private UserStatusType status;
 
     @Column(nullable = false)
     private LocalDateTime registrationDate;
@@ -84,19 +84,19 @@ public class UserEntity {
         this.password = password;
     }
 
-    public UserRoleEntity getRole() {
+    public UserRoleType getRole() {
         return role;
     }
 
-    public void setRole(UserRoleEntity role) {
+    public void setRole(UserRoleType role) {
         this.role = role;
     }
 
-    public UserStatusEntity getStatus() {
+    public UserStatusType getStatus() {
         return status;
     }
 
-    public void setStatus(UserStatusEntity status) {
+    public void setStatus(UserStatusType status) {
         this.status = status;
     }
 

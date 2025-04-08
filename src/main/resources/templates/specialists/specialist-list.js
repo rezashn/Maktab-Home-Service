@@ -1,4 +1,4 @@
-fetch('/specialists')
+fetch('http://localhost:8080/web_controller/specialists/list')
     .then(response => response.json())
     .then(specialists => {
         let tableBody = document.getElementById('specialistTableBody');
