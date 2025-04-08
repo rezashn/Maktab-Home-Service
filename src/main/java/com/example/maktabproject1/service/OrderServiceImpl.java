@@ -7,6 +7,7 @@ import com.example.maktabproject1.entity.SpecialistEntity;
 import com.example.maktabproject1.exception.InvalidOrderStatusException;
 import com.example.maktabproject1.exception.ResponseNotFoundException;
 import com.example.maktabproject1.repository.OrderRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ public class OrderServiceImpl implements OrderService {
     private final SubServiceService subServiceService;
     private final SpecialistService specialistService;
     private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
+
 
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository,

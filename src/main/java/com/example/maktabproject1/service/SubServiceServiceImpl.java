@@ -22,7 +22,7 @@ public class SubServiceServiceImpl implements SubServiceService {
 
     private final SubServiceRepository subServiceRepository;
     private final ServiceCategoryRepository serviceCategoryRepository;
-    private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(SubServiceServiceImpl.class);
 
 
     @Autowired
