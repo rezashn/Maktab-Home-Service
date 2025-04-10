@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SpecialistServiceImpl implements SpecialistService {
@@ -87,7 +89,6 @@ public class SpecialistServiceImpl implements SpecialistService {
         entity.setId(dto.getId());
         entity.setUser(userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new ResponseNotFoundException("User not found: " + dto.getUserId())));
-        entity.setImagePath(dto.getImagePath());
         entity.setRating(dto.getRating());
         if (dto.getSubServiceIds() != null) {
             List<SubServiceEntity> services = new ArrayList<>();
@@ -104,7 +105,6 @@ public class SpecialistServiceImpl implements SpecialistService {
         SpecialistDto dto = new SpecialistDto();
         dto.setId(entity.getId());
         dto.setUserId(entity.getUser().getId());
-        dto.setImagePath(entity.getImagePath());
         dto.setRating(entity.getRating());
         if (entity.getSubServices() != null) {
             List<Long> ids = new ArrayList<>();
@@ -117,38 +117,34 @@ public class SpecialistServiceImpl implements SpecialistService {
     }
 
     @Override
-    public void setSpecialistImage(Long specialistId, MultipartFile image) throws IOException {
-        try {
-            LocalDateTime now = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
-            String timestamp = now.format(formatter);
-            String filename = timestamp + "-" + image.getOriginalFilename();
+    public List<SpecialistDto> searchSpecialistsBySubService(String subServiceName) {
+        List<SpecialistEntity> entities = specialistRepository.findBySubServiceNameContaining(subServiceName);
+        return entities.stream()
+                .map(this::mapEntityToDto)
+                .collect(Collectors.toList());
+    }
 
-            String uploadDirectory = "/Users/M.Shahrokhi/Documents/homeServiceImage/";
+    @Override
+    public List<SpecialistDto> searchSpecialistsByRating(BigDecimal minRating) {
+        List<SpecialistEntity> entities = specialistRepository.findByRatingGreaterThanEqual(minRating);
+        return entities.stream()
+                .map(this::mapEntityToDto)
+                .collect(Collectors.toList());
+    }
 
-            Path directoryPath = Paths.get(uploadDirectory);
-//            if (!Files.exists(directoryPath)) {
-//                Files.createDirectories(directoryPath);
-//            }
-//
-//            String filePath = uploadDirectory + filename;
-//            image.transferTo(new File(filePath));
+    @Override
+    public List<SpecialistDto> searchSpecialistsBySubServiceAndRating(String subServiceName, BigDecimal minRating) {
+        List<SpecialistEntity> entities = specialistRepository.findBySubServiceNameContainingAndRatingGreaterThanEqual(subServiceName, minRating);
+        return entities.stream()
+                .map(this::mapEntityToDto)
+                .collect(Collectors.toList());
+    }
 
-            Files.createDirectories(directoryPath);
-            String filePath = directoryPath.resolve(filename).toString();
-            image.transferTo(new File(filePath));
-
-            SpecialistEntity specialist = specialistRepository.findById(specialistId)
-                    .orElseThrow(() -> new ResponseNotFoundException("Specialist not found"));
-            specialist.setImagePath(filename);
-            specialistRepository.save(specialist);
-            log.info("Image uploaded and specialist updated successfully for specialist ID: {}", specialistId);
-        } catch (IOException e) {
-            log.error("IOException while saving image for specialist ID: {}", specialistId, e);
-            throw e;
-        } catch (Exception e) {
-            log.error("Unexpected error while saving image for specialist ID: {}", specialistId, e);
-            throw new RuntimeException("Failed to save image", e);
-        }
+    @Override
+    public List<SpecialistDto> searchSpecialistsBySubServiceEntity(SubServiceEntity subService) {
+        List<SpecialistEntity> entities = specialistRepository.findBySubServices(subService);
+        return entities.stream()
+                .map(this::mapEntityToDto)
+                .collect(Collectors.toList());
     }
 }

@@ -1,6 +1,7 @@
 package com.example.maktabproject1.controller;
 
 import com.example.maktabproject1.dto.SpecialistDto;
+import com.example.maktabproject1.entity.SubServiceEntity;
 import com.example.maktabproject1.service.SpecialistService;
 import com.example.maktabproject1.service.SpecialistServiceImpl;
 import jakarta.validation.Valid;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -92,22 +94,29 @@ public class SpecialistController {
         }
     }
 
-    @PostMapping("/{specialistId}/image")
-    public ResponseEntity<String> uploadSpecialistImage(
-            @PathVariable Long specialistId,
-            @RequestParam("image") MultipartFile image
-    ) {
-        try {
-            log.info("Attempting to upload image for specialist ID: {}", specialistId);
-            specialistService.setSpecialistImage(specialistId, image);
-            log.info("Image uploaded successfully for specialist ID: {}", specialistId);
-            return ResponseEntity.ok("Image uploaded successfully.");
-        } catch (IOException e) {
-            log.error("Error uploading image for specialist ID: {}", specialistId, e);
-            return ResponseEntity.badRequest().body("Image upload failed: " + e.getMessage());
-        } catch (Exception e) {
-            log.error("Unexpected error uploading image for specialist ID: {}", specialistId, e);
-            return ResponseEntity.internalServerError().body("Unexpected error occurred.");
-        }
+    @GetMapping("/search/sub-service")
+    public ResponseEntity<List<SpecialistDto>> searchBySubService(@RequestParam String subServiceName) {
+        List<SpecialistDto> specialistDtos = specialistService.searchSpecialistsBySubService(subServiceName);
+        return new ResponseEntity<>(specialistDtos, HttpStatus.OK);
+    }
+
+    @GetMapping("/search/rating")
+    public ResponseEntity<List<SpecialistDto>> searchByRating(@RequestParam BigDecimal minRating) {
+        List<SpecialistDto> specialistDtos = specialistService.searchSpecialistsByRating(minRating);
+        return new ResponseEntity<>(specialistDtos, HttpStatus.OK);
+    }
+
+    @GetMapping("/search/sub-service-rating")
+    public ResponseEntity<List<SpecialistDto>> searchBySubServiceAndRating(
+            @RequestParam String subServiceName,
+            @RequestParam BigDecimal minRating) {
+        List<SpecialistDto> specialistDtos = specialistService.searchSpecialistsBySubServiceAndRating(subServiceName, minRating);
+        return new ResponseEntity<>(specialistDtos, HttpStatus.OK);
+    }
+
+    @PostMapping("/search/sub-service-entity")
+    public ResponseEntity<List<SpecialistDto>> searchBySubServiceEntity(@RequestBody SubServiceEntity subService) {
+        List<SpecialistDto> specialistDtos = specialistService.searchSpecialistsBySubServiceEntity(subService);
+        return new ResponseEntity<>(specialistDtos, HttpStatus.OK);
     }
 }

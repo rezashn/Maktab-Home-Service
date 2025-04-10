@@ -1,5 +1,6 @@
 package com.example.maktabproject1.controller;
 
+import com.example.maktabproject1.dto.ChangePasswordDto;
 import com.example.maktabproject1.dto.UserDto;
 import com.example.maktabproject1.service.UserService;
 import jakarta.validation.Valid;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 
 @RestController

@@ -1,7 +1,9 @@
 package com.example.maktabproject1.service;
 
+import com.example.maktabproject1.dto.ChangePasswordDto;
 import com.example.maktabproject1.dto.UserDto;
 import com.example.maktabproject1.entity.UserEntity;
+import com.example.maktabproject1.entity.UserRoleType;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -18,6 +20,17 @@ public interface UserService {
     UserDto updateUser(Long userId, UserDto userDTO);
 
     void deleteUser(Long userId);
+
+    public List<UserDto> getUsersByRole(UserRoleType role);
+
+    public List<UserDto> getUserByFirstName(String firstName);
+
+
+    public List<UserDto> getUserByLastName(String lastName);
+
+    public List<UserDto> getUserByEmail(String email);
+
+    public void changePassword(Long userId, ChangePasswordDto changePasswordDto);
 
     UserEntity getUserEntityById(Long userId);
 

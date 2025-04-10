@@ -17,9 +17,6 @@ public class SpecialistEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
-    @Column(name = "image_path", length = 255)
-    private String imagePath;
-
     private BigDecimal rating;
 
     @ManyToMany
@@ -50,14 +47,6 @@ public class SpecialistEntity {
         this.user = user;
     }
 
-    public String getImagePath() {
-        return imagePath;
-    }
-
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
-    }
-
     public BigDecimal getRating() {
         return rating;
     }
@@ -86,11 +75,11 @@ public class SpecialistEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SpecialistEntity that = (SpecialistEntity) o;
-        return Objects.equals(id, that.id) && Objects.equals(user, that.user) && Objects.equals(imagePath, that.imagePath) && Objects.equals(rating, that.rating) && Objects.equals(subServices, that.subServices) && Objects.equals(offers, that.offers);
+        return Objects.equals(id, that.id) && Objects.equals(user, that.user)&& Objects.equals(rating, that.rating) && Objects.equals(subServices, that.subServices) && Objects.equals(offers, that.offers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user, imagePath, rating, subServices, offers);
+        return Objects.hash(id, user,  rating, subServices, offers);
     }
 }

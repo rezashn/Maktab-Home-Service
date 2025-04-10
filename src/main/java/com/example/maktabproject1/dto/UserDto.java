@@ -1,10 +1,7 @@
 package com.example.maktabproject1.dto;
 
 import com.example.maktabproject1.entity.UserRoleType;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -23,7 +20,12 @@ public class UserDto {
     @Email(message = "Invalid email format")
     private String email;
 
-    @Size(min = 8, message = "Password must be at least 8 characters")
+    @Pattern(
+            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$",
+            message = "Password must be at least 8 characters long and contain at least one uppercase letter," +
+                    " one lowercase letter, and one digit"
+    )
+
     @NotBlank(message = "Password is required")
     private String password;
 

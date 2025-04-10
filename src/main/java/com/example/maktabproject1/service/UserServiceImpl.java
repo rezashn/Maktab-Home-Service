@@ -1,14 +1,16 @@
 package com.example.maktabproject1.service;
 
+import com.example.maktabproject1.dto.ChangePasswordDto;
 import com.example.maktabproject1.dto.UserDto;
 import com.example.maktabproject1.entity.UserEntity;
+import com.example.maktabproject1.entity.UserRoleType;
 import com.example.maktabproject1.entity.UserStatusType;
 import com.example.maktabproject1.exception.DuplicateResourceException;
 import com.example.maktabproject1.exception.ResponseNotFoundException;
 import com.example.maktabproject1.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,11 +29,14 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
+
 
     @Override
     public UserDto registerUser(UserDto dto) {
@@ -41,6 +46,10 @@ public class UserServiceImpl implements UserService {
         UserEntity entity = mapDtoToEntity(dto);
         entity.setStatus(UserStatusType.NEW);
         entity.setRegistrationDate(LocalDateTime.now());
+
+        String hashedPassword = passwordEncoder.encode(dto.getPassword());
+        entity.setPassword(hashedPassword);
+
         UserEntity savedEntity = userRepository.save(entity);
 
         log.info("User registered with ID: {}", savedEntity.getId());
@@ -79,6 +88,34 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
         log.info("User deleted with ID: {}", id);
     }
+    @Override
+    public List<UserDto> getUsersByRole(UserRoleType role) {
+        return userRepository.findByRole(role).stream()
+                .map(this::mapEntityToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserDto> getUserByFirstName(String firstName) {
+        return userRepository.findByFirstNameIgnoreCase(firstName).stream()
+                .map(this::mapEntityToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserDto> getUserByLastName(String lastName) {
+        return userRepository.findByLastNameIgnoreCase(lastName).stream()
+                .map(this::mapEntityToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserDto> getUserByEmail(String email) {
+        return userRepository.findByEmailIgnoreCase(email).stream()
+                .map(this::mapEntityToDto)
+                .collect(Collectors.toList());
+    }
+
 
     @Override
     public UserEntity getUserEntityById(Long id) {
@@ -86,9 +123,24 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResponseNotFoundException("User not found: " + id));
     }
 
+    @Override
+    public void changePassword(Long userId, ChangePasswordDto changePasswordDto) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseNotFoundException("User not found: " + userId));
+
+        if (!passwordEncoder.matches(changePasswordDto.getCurrentPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Invalid current password");
+        }
+
+        String encodedNewPassword = passwordEncoder.encode(changePasswordDto.getNewPassword());
+        user.setPassword(encodedNewPassword);
+        userRepository.save(user);
+        log.info("Password changed successfully for user ID: {}", userId);
+    }
+
     private UserEntity mapDtoToEntity(UserDto dto) {
         UserEntity entity = new UserEntity();
-        if(dto == null){
+        if (dto == null) {
             throw new IllegalArgumentException("UserDto cannot be null");
         }
         entity.setId(dto.getId());
@@ -103,7 +155,7 @@ public class UserServiceImpl implements UserService {
 
     private UserDto mapEntityToDto(UserEntity entity) {
         UserDto dto = new UserDto();
-        if(entity == null){
+        if (entity == null) {
             throw new IllegalArgumentException("UserEntity cannot be null");
         }
         dto.setId(entity.getId());
@@ -131,6 +183,7 @@ public class UserServiceImpl implements UserService {
                 Files.createDirectories(directoryPath);
             }
 
+            //TODO: USE ANNOTATION INSTEAD OF PATH
             String filePath = uploadDirectory + filename;
             image.transferTo(new File(filePath));
 
