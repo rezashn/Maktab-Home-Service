@@ -1,6 +1,7 @@
 package com.example.maktabproject1.controller;
 
 import com.example.maktabproject1.dto.OrderDto;
+import com.example.maktabproject1.entity.OfferEntity;
 import com.example.maktabproject1.entity.OrderStatusType;
 import com.example.maktabproject1.service.OrderService;
 import jakarta.validation.Valid;
@@ -113,6 +114,44 @@ public class OrderController {
         } catch (Exception e) {
             log.error("Error assigning specialist to order: {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @GetMapping("/{orderId}/accepted-offer")
+    public ResponseEntity<OfferEntity> getAcceptedOffer(@PathVariable Long orderId) {
+        try{
+            log.info("Attempting to get accepted offer for order ID: {}", orderId);
+            OfferEntity offer = orderService.getAcceptedOffer(orderId);
+            if(offer != null){
+                log.info("accepted offer found for order id: {}", orderId);
+                return ResponseEntity.ok(offer);
+            }
+            else{
+                log.info("No accepted offer found for order id: {}", orderId);
+                return ResponseEntity.notFound().build();
+            }
+        }catch (Exception e){
+            log.error("Error getting accepted offer: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("/{orderId}/offers")
+    public ResponseEntity<List<OfferEntity>> getAllOffersOfOrder(@PathVariable Long orderId) {
+        try{
+            log.info("Attempting to get all offers for order ID: {}", orderId);
+            List<OfferEntity> offers = orderService.getAllOffersOfOrder(orderId);
+            if(!offers.isEmpty()){
+                log.info("offers found for order id : {}", orderId);
+                return ResponseEntity.ok(offers);
+            }
+            else{
+                log.info("No offers found for order id: {}", orderId);
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e){
+            log.error("error getting all offers of order: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

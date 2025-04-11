@@ -21,18 +21,19 @@ public interface UserService {
 
     void deleteUser(Long userId);
 
-    public List<UserDto> getUsersByRole(UserRoleType role);
+    List<UserDto> getUsersByRole(UserRoleType role);
 
-    public List<UserDto> getUserByFirstName(String firstName);
+    List<UserDto> getUserByFirstName(String firstName);
 
+    List<UserDto> getUserByLastName(String lastName);
 
-    public List<UserDto> getUserByLastName(String lastName);
+    List<UserDto> getUserByEmail(String email);
 
-    public List<UserDto> getUserByEmail(String email);
-
-    public void changePassword(Long userId, ChangePasswordDto changePasswordDto);
+    void changePassword(Long userId, ChangePasswordDto changePasswordDto);
 
     UserEntity getUserEntityById(Long userId);
 
     void setUserImage(Long userId, MultipartFile image) throws IOException;
+
+    byte[] getUserImageData(Long userId);
 }

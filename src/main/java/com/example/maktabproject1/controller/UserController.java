@@ -2,12 +2,14 @@ package com.example.maktabproject1.controller;
 
 import com.example.maktabproject1.dto.ChangePasswordDto;
 import com.example.maktabproject1.dto.UserDto;
+import com.example.maktabproject1.entity.UserEntity;
 import com.example.maktabproject1.service.UserService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -112,6 +114,19 @@ public class UserController {
         } catch (Exception e) {
             log.error("Unexpected error uploading image for user ID: {}", userId, e);
             return ResponseEntity.internalServerError().body("Unexpected error occurred.");
+        }
+    }
+
+    @GetMapping("/{userId}/image")
+    public ResponseEntity<byte[]> getUserImage(@PathVariable Long userId) {
+        byte[] imageData = userService.getUserImageData(userId);
+
+        if (imageData != null) {
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG) // Or other image type
+                    .body(imageData);
+        } else {
+            return ResponseEntity.notFound().build();
         }
     }
 }

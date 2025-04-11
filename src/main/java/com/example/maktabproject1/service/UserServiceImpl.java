@@ -149,7 +149,6 @@ public class UserServiceImpl implements UserService {
         entity.setEmail(dto.getEmail());
         entity.setPassword(dto.getPassword());
         entity.setRole(dto.getRole());
-        entity.setCredit(dto.getCredit());
         return entity;
     }
 
@@ -164,33 +163,18 @@ public class UserServiceImpl implements UserService {
         dto.setEmail(entity.getEmail());
         dto.setPassword(entity.getPassword());
         dto.setRole(entity.getRole());
-        dto.setCredit(entity.getCredit());
         return dto;
     }
 
     @Override
     public void setUserImage(Long userId, MultipartFile image) throws IOException {
         try {
-            LocalDateTime now = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
-            String timestamp = now.format(formatter);
-            String filename = timestamp + "-" + image.getOriginalFilename();
-
-            String uploadDirectory = "/Users/M.shahrokhi/Documents/homeserviceimage/";
-
-            Path directoryPath = Paths.get(uploadDirectory);
-            if (!Files.exists(directoryPath)) {
-                Files.createDirectories(directoryPath);
-            }
-
-            //TODO: USE ANNOTATION INSTEAD OF PATH
-            String filePath = uploadDirectory + filename;
-            image.transferTo(new File(filePath));
-
             UserEntity user = userRepository.findById(userId)
                     .orElseThrow(() -> new ResponseNotFoundException("User not found"));
-            user.setImagePath(filename);
+
+            user.setImageData(image.getBytes());
             userRepository.save(user);
+
             log.info("Image uploaded and user updated successfully for user ID: {}", userId);
         } catch (IOException e) {
             log.error("IOException while saving image for user ID: {}", userId, e);
@@ -199,5 +183,13 @@ public class UserServiceImpl implements UserService {
             log.error("Unexpected error while saving image for user ID: {}", userId, e);
             throw new RuntimeException("Failed to save image", e);
         }
+    }
+
+    @Override
+    public byte[] getUserImageData(Long userId) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseNotFoundException("User not found"));
+
+        return user.getImageData();
     }
 }

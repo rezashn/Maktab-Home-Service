@@ -1,7 +1,6 @@
 package com.example.maktabproject1.entity;
 
 import jakarta.persistence.*;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -35,10 +34,9 @@ public class UserEntity {
 
     private LocalDateTime registrationDate;
 
-    @Column(name = "image_path", length = 255)
-    private String imagePath;
-
-    private BigDecimal credit;
+    @Lob
+    @Column(name = "image_data")
+    private byte[] imageData;
 
     public UserEntity() {
     }
@@ -51,20 +49,36 @@ public class UserEntity {
         this.id = id;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public byte[] getImageData() {
+        return imageData;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setImageData(byte[] imageData) {
+        this.imageData = imageData;
     }
 
-    public String getLastName() {
-        return lastName;
+    public LocalDateTime getRegistrationDate() {
+        return registrationDate;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setRegistrationDate(LocalDateTime registrationDate) {
+        this.registrationDate = registrationDate;
+    }
+
+    public UserStatusType getStatus() {
+        return status;
+    }
+
+    public void setStatus(UserStatusType status) {
+        this.status = status;
+    }
+
+    public UserRoleType getRole() {
+        return role;
+    }
+
+    public void setRole(UserRoleType role) {
+        this.role = role;
     }
 
     public String getEmail() {
@@ -83,72 +97,19 @@ public class UserEntity {
         this.password = password;
     }
 
-    public UserRoleType getRole() {
-        return role;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setRole(UserRoleType role) {
-        this.role = role;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
-    public UserStatusType getStatus() {
-        return status;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setStatus(UserStatusType status) {
-        this.status = status;
-    }
-
-    public LocalDateTime getRegistrationDate() {
-        return registrationDate;
-    }
-
-    public void setRegistrationDate(LocalDateTime registrationDate) {
-        this.registrationDate = registrationDate;
-    }
-
-    public String getImagePath() {
-        return imagePath;
-    }
-
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
-    }
-
-    public BigDecimal getCredit() {
-        return credit;
-    }
-
-    public void setCredit(BigDecimal credit) {
-        this.credit = credit;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UserEntity that = (UserEntity) o;
-        return Objects.equals(id, that.id) && Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) && Objects.equals(email, that.email) && Objects.equals(password, that.password) && role == that.role && status == that.status && Objects.equals(registrationDate, that.registrationDate) && Objects.equals(imagePath, that.imagePath) && Objects.equals(credit, that.credit);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, firstName, lastName, email, password, role, status, registrationDate, imagePath, credit);
-    }
-
-    @Override
-    public String toString() {
-        return "UserEntity{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", role=" + role +
-                ", status=" + status +
-                ", registrationDate=" + registrationDate +
-                ", imagePath='" + imagePath + '\'' +
-                ", credit=" + credit +
-                '}';
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 }

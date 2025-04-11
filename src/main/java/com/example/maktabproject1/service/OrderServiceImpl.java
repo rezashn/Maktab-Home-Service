@@ -1,11 +1,13 @@
 package com.example.maktabproject1.service;
 
 import com.example.maktabproject1.dto.OrderDto;
+import com.example.maktabproject1.entity.OfferEntity;
 import com.example.maktabproject1.entity.OrderEntity;
 import com.example.maktabproject1.entity.OrderStatusType;
 import com.example.maktabproject1.entity.SpecialistEntity;
 import com.example.maktabproject1.exception.InvalidOrderStatusException;
 import com.example.maktabproject1.exception.ResponseNotFoundException;
+import com.example.maktabproject1.repository.OfferRepository;
 import com.example.maktabproject1.repository.OrderRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -21,14 +23,15 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
+    private final OfferRepository offerRepository;
     private final UserService userService;
     private final SubServiceService subServiceService;
     private final SpecialistService specialistService;
     private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
 
-
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository,
+                            OfferRepository offerRepository,
                             UserService userService,
                             SubServiceService subServiceService,
                             SpecialistService specialistService) {
@@ -36,6 +39,7 @@ public class OrderServiceImpl implements OrderService {
         this.userService = userService;
         this.subServiceService = subServiceService;
         this.specialistService = specialistService;
+        this.offerRepository = offerRepository;
     }
 
     @Override
@@ -97,6 +101,18 @@ public class OrderServiceImpl implements OrderService {
         OrderEntity updatedOrder = orderRepository.save(order);
         log.info("Specialist assigned to order ID: {}", orderId);
         return mapEntityToDto(updatedOrder);
+    }
+
+    @Override
+    public OfferEntity getAcceptedOffer(Long orderId) {
+        OrderEntity order = getOrderEntityById(orderId);
+        return order.getAcceptedOffer();
+    }
+
+    @Override
+    public List<OfferEntity> getAllOffersOfOrder(Long orderId) {
+        OrderEntity order = getOrderEntityById(orderId);
+        return order.getOffers();
     }
 
     private OrderEntity mapDtoToEntity(OrderDto dto) {
