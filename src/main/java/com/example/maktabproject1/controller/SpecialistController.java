@@ -29,19 +29,6 @@ public class SpecialistController {
         this.specialistService = specialistService;
     }
 
-    @PostMapping
-    public ResponseEntity<SpecialistDto> addSpecialist(@Valid @RequestBody SpecialistDto specialistDTO) {
-        try {
-            log.info("Attempting to add specialist: {}", specialistDTO);
-            SpecialistDto addedSpecialist = specialistService.createSpecialist(specialistDTO);
-            log.info("Specialist added successfully: {}", addedSpecialist);
-            return ResponseEntity.status(HttpStatus.CREATED).body(addedSpecialist);
-        } catch (Exception e) {
-            log.error("Error adding specialist: {}", e.getMessage(), e);
-            return ResponseEntity.badRequest().body(null);
-        }
-    }
-
     @PutMapping("/{specialistId}")
     public ResponseEntity<SpecialistDto> updateSpecialist(@PathVariable Long specialistId, @Valid @RequestBody SpecialistDto specialistDTO) {
         try {

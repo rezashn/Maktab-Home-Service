@@ -3,6 +3,7 @@ package com.example.maktabproject1.service;
 import com.example.maktabproject1.dto.SpecialistDto;
 import com.example.maktabproject1.entity.SpecialistEntity;
 import com.example.maktabproject1.entity.SubServiceEntity;
+import com.example.maktabproject1.entity.UserEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -11,7 +12,7 @@ import java.util.List;
 
 public interface SpecialistService {
 
-        SpecialistDto createSpecialist(SpecialistDto specialistDTO);
+        SpecialistEntity createSpecialistFromUser(UserEntity user);
 
         SpecialistDto getSpecialistById(Long id);
 

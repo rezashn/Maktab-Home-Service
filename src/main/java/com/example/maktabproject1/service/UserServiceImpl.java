@@ -14,13 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,10 +25,12 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
     private final PasswordEncoder passwordEncoder;
+    private final SpecialistService specialistService;
 
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, SpecialistService specialistService) {
         this.userRepository = userRepository;
+        this.specialistService = specialistService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -43,8 +40,10 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new DuplicateResourceException("Email already exists");
         }
+
         UserEntity entity = mapDtoToEntity(dto);
         entity.setStatus(UserStatusType.NEW);
+        entity.setRole(dto.getRole() != null ? dto.getRole() : UserRoleType.CUSTOMER);
         entity.setRegistrationDate(LocalDateTime.now());
 
         String hashedPassword = passwordEncoder.encode(dto.getPassword());
@@ -52,9 +51,14 @@ public class UserServiceImpl implements UserService {
 
         UserEntity savedEntity = userRepository.save(entity);
 
+        if (entity.getRole() == UserRoleType.SPECIALIST) {
+            specialistService.createSpecialistFromUser(savedEntity);
+        }
+
         log.info("User registered with ID: {}", savedEntity.getId());
         return mapEntityToDto(savedEntity);
     }
+
 
     @Override
     public UserDto getUserById(Long id) {
@@ -88,6 +92,7 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
         log.info("User deleted with ID: {}", id);
     }
+
     @Override
     public List<UserDto> getUsersByRole(UserRoleType role) {
         return userRepository.findByRole(role).stream()

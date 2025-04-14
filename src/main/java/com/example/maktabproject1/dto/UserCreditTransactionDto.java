@@ -13,7 +13,6 @@ public class UserCreditTransactionDto {
 
     public UserCreditTransactionDto() {}
 
-    // Getters and setters...
     public Long getId() {
         return id;
     }

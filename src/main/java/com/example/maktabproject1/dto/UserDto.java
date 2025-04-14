@@ -32,9 +32,6 @@ public class UserDto {
     @NotNull(message = "Role is required")
     private UserRoleType role;
 
-    @Size(max = 255)
-    private String imagePath;
-
     private BigDecimal credit;
 
     public UserDto() {
@@ -88,14 +85,6 @@ public class UserDto {
         this.role = role;
     }
 
-    public String getImagePath() {
-        return imagePath;
-    }
-
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
-    }
-
     public BigDecimal getCredit() {
         return credit;
     }
@@ -109,12 +98,12 @@ public class UserDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserDto that = (UserDto) o;
-        return Objects.equals(id, that.id) && Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) && Objects.equals(email, that.email) && Objects.equals(password, that.password) && role == that.role && Objects.equals(imagePath, that.imagePath) && Objects.equals(credit, that.credit);
+        return Objects.equals(id, that.id) && Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) && Objects.equals(email, that.email) && Objects.equals(password, that.password) && role == that.role && Objects.equals(credit, that.credit);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, lastName, email, password, role, imagePath, credit);
+        return Objects.hash(id, firstName, lastName, email, password, role, credit);
     }
 
     @Override
@@ -126,7 +115,6 @@ public class UserDto {
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", role=" + role +
-                ", imagePath='" + imagePath + '\'' +
                 ", credit=" + credit +
                 '}';
     }

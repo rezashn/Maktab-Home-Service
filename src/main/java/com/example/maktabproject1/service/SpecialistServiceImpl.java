@@ -42,8 +42,11 @@ public class SpecialistServiceImpl implements SpecialistService {
     }
 
     @Override
-    public SpecialistDto createSpecialist(SpecialistDto dto) {
-        return mapEntityToDto(specialistRepository.save(mapDtoToEntity(dto)));
+    public SpecialistEntity createSpecialistFromUser(UserEntity user) {
+        SpecialistEntity specialist = new SpecialistEntity();
+        specialist.setUser(user);
+        specialist.setRating(BigDecimal.ZERO);
+        return specialistRepository.save(specialist);
     }
 
     @Override
