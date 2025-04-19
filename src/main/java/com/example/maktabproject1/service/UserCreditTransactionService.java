@@ -1,14 +1,16 @@
 package com.example.maktabproject1.service;
 
+import com.example.maktabproject1.dto.ResponseDto;
 import com.example.maktabproject1.dto.UserCreditTransactionDto;
+
 import java.math.BigDecimal;
 import java.util.List;
 
 public interface UserCreditTransactionService {
 
-    UserCreditTransactionDto deposit(Long userId, BigDecimal amount, String description);
+    ResponseDto<UserCreditTransactionDto> deposit(Long userId, BigDecimal amount, String description);
 
-    UserCreditTransactionDto withdraw(Long userId, BigDecimal amount, String description);
+    ResponseDto<UserCreditTransactionDto> withdraw(Long userId, BigDecimal amount, String description);
 
     UserCreditTransactionDto createTransaction(UserCreditTransactionDto transactionDto);
 

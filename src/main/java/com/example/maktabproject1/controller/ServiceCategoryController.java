@@ -1,5 +1,6 @@
 package com.example.maktabproject1.controller;
 
+import com.example.maktabproject1.dto.ResponseDto;
 import com.example.maktabproject1.dto.ServiceCategoryDto;
 import com.example.maktabproject1.service.ServiceCategoryService;
 import jakarta.validation.Valid;
@@ -25,67 +26,77 @@ public class ServiceCategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<ServiceCategoryDto> createServiceCategory(@Valid @RequestBody ServiceCategoryDto serviceCategoryDTO) {
+    public ResponseEntity<ResponseDto<ServiceCategoryDto>> createServiceCategory(@Valid @RequestBody ServiceCategoryDto serviceCategoryDTO) {
         try {
             log.info("Attempting to create service category: {}", serviceCategoryDTO);
             ServiceCategoryDto createdCategory = serviceCategoryService.createServiceCategory(serviceCategoryDTO);
             log.info("Service category created successfully: {}", createdCategory);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdCategory);
+            ResponseDto<ServiceCategoryDto> response = new ResponseDto<>(true, createdCategory, "Service category created successfully");
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
             log.error("Error creating service category: {}", e.getMessage(), e);
-            return ResponseEntity.badRequest().body(null);
+            ResponseDto<ServiceCategoryDto> response = new ResponseDto<>(false, null, e.getMessage());
+            return ResponseEntity.badRequest().body(response);
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ServiceCategoryDto> getServiceCategoryById(@PathVariable Long id) {
+    public ResponseEntity<ResponseDto<ServiceCategoryDto>> getServiceCategoryById(@PathVariable Long id) {
         try {
             log.info("Fetching service category by ID: {}", id);
             ServiceCategoryDto category = serviceCategoryService.getServiceCategoryById(id);
             log.info("Service category found: {}", category);
-            return ResponseEntity.ok(category);
+            ResponseDto<ServiceCategoryDto> response = new ResponseDto<>(true, category, "Service category found");
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Error fetching service category: {}", e.getMessage(), e);
-            return ResponseEntity.internalServerError().build();
+            ResponseDto<ServiceCategoryDto> response = new ResponseDto<>(false, null, e.getMessage());
+            return ResponseEntity.internalServerError().body(response);
         }
     }
 
     @GetMapping
-    public ResponseEntity<List<ServiceCategoryDto>> getAllServiceCategories() {
+    public ResponseEntity<ResponseDto<List<ServiceCategoryDto>>> getAllServiceCategories() {
         try {
             log.info("Fetching all service categories.");
             List<ServiceCategoryDto> categories = serviceCategoryService.getAllServiceCategories();
             log.info("Found {} service categories.", categories.size());
-            return ResponseEntity.ok(categories);
+            ResponseDto<List<ServiceCategoryDto>> response = new ResponseDto<>(true, categories, "Service categories found");
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Error fetching all service categories: {}", e.getMessage(), e);
-            return ResponseEntity.internalServerError().build();
+            ResponseDto<List<ServiceCategoryDto>> response = new ResponseDto<>(false, null, e.getMessage());
+            return ResponseEntity.internalServerError().body(response);
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ServiceCategoryDto> updateServiceCategory(@PathVariable Long id, @Valid @RequestBody ServiceCategoryDto serviceCategoryDTO) {
+    public ResponseEntity<ResponseDto<ServiceCategoryDto>> updateServiceCategory(@PathVariable Long id, @Valid @RequestBody ServiceCategoryDto serviceCategoryDTO) {
         try {
             log.info("Attempting to update service category with ID: {}, data: {}", id, serviceCategoryDTO);
             ServiceCategoryDto updatedCategory = serviceCategoryService.updateServiceCategory(id, serviceCategoryDTO);
             log.info("Service category updated successfully: {}", updatedCategory);
-            return ResponseEntity.ok(updatedCategory);
+            ResponseDto<ServiceCategoryDto> response = new ResponseDto<>(true, updatedCategory, "Service category updated successfully");
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Error updating service category: {}", e.getMessage(), e);
-            return ResponseEntity.badRequest().body(null);
+            ResponseDto<ServiceCategoryDto> response = new ResponseDto<>(false, null, e.getMessage());
+            return ResponseEntity.badRequest().body(response);
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteServiceCategory(@PathVariable Long id) {
+    public ResponseEntity<ResponseDto<Void>> deleteServiceCategory(@PathVariable Long id) {
         try {
             log.info("Attempting to delete service category with ID: {}", id);
             serviceCategoryService.deleteServiceCategory(id);
             log.info("Service category deleted successfully: {}", id);
+            ResponseDto<Void> response = new ResponseDto<>(true, null, "Service category deleted successfully");
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             log.error("Error deleting service category: {}", e.getMessage(), e);
-            return ResponseEntity.internalServerError().build();
+            ResponseDto<Void> response = new ResponseDto<>(false, null, e.getMessage());
+            return ResponseEntity.internalServerError().body(response);
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.example.maktabproject1.entity;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -36,10 +37,10 @@ public class UserEntity {
 
     @Lob
     @Column(name = "image_data")
+    @Basic(fetch = FetchType.LAZY)
     private byte[] imageData;
 
-    public UserEntity() {
-    }
+    public UserEntity() {}
 
     public Long getId() {
         return id;
@@ -111,5 +112,18 @@ public class UserEntity {
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserEntity that = (UserEntity) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

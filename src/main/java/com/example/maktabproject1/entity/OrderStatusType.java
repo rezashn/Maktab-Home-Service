@@ -6,5 +6,7 @@ public enum OrderStatusType {
     SPECIALIST_ON_THE_WAY,
     STARTED,
     FINISHED,
-    PAID
+    PAID,
+    CANCELLED,
+    WAITING_FOR_PAYMENT
 }

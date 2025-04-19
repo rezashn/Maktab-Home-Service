@@ -1,5 +1,6 @@
 package com.example.maktabproject1.service;
 
+import com.example.maktabproject1.dto.ResponseDto;
 import com.example.maktabproject1.dto.UserCreditTransactionDto;
 import com.example.maktabproject1.entity.UserCreditTransactionEntity;
 import com.example.maktabproject1.entity.UserEntity;
@@ -25,21 +26,23 @@ public class UserCreditTransactionServiceImpl implements UserCreditTransactionSe
     }
 
     @Override
-    public UserCreditTransactionDto deposit(Long userId, BigDecimal amount, String description) {
+    public ResponseDto<UserCreditTransactionDto> deposit(Long userId, BigDecimal amount, String description) {
         UserCreditTransactionDto transactionDto = new UserCreditTransactionDto();
         transactionDto.setUserId(userId);
         transactionDto.setAmount(amount);
         transactionDto.setDescription("Deposit: " + description);
-        return createTransaction(transactionDto);
+        UserCreditTransactionDto createdTransaction = createTransaction(transactionDto);
+        return new ResponseDto<>(true, createdTransaction, "Deposit successful");
     }
 
     @Override
-    public UserCreditTransactionDto withdraw(Long userId, BigDecimal amount, String description) {
+    public ResponseDto<UserCreditTransactionDto> withdraw(Long userId, BigDecimal amount, String description) {
         UserCreditTransactionDto transactionDto = new UserCreditTransactionDto();
         transactionDto.setUserId(userId);
         transactionDto.setAmount(amount.negate());
         transactionDto.setDescription("Withdrawal: " + description);
-        return createTransaction(transactionDto);
+        UserCreditTransactionDto createdTransaction = createTransaction(transactionDto);
+        return new ResponseDto<>(true, createdTransaction, "Withdrawal successful");
     }
 
     @Override
@@ -58,7 +61,8 @@ public class UserCreditTransactionServiceImpl implements UserCreditTransactionSe
 
     @Override
     public List<UserCreditTransactionDto> getTransactionsByUser(Long userId) {
-        return transactionRepository.findByUser_Id(userId).stream()
+        UserEntity user = userService.getUserEntityById(userId);
+        return transactionRepository.findByUser(user).stream()
                 .map(this::mapEntityToDto)
                 .collect(Collectors.toList());
     }
@@ -73,7 +77,8 @@ public class UserCreditTransactionServiceImpl implements UserCreditTransactionSe
 
     @Override
     public List<UserCreditTransactionDto> getDepositHistory(Long userId) {
-        return transactionRepository.findByUser_Id(userId).stream()
+        UserEntity user = userService.getUserEntityById(userId);
+        return transactionRepository.findByUser(user).stream()
                 .filter(transaction -> transaction.getAmount().compareTo(BigDecimal.ZERO) > 0)
                 .map(this::mapEntityToDto)
                 .collect(Collectors.toList());
@@ -81,7 +86,8 @@ public class UserCreditTransactionServiceImpl implements UserCreditTransactionSe
 
     @Override
     public List<UserCreditTransactionDto> getWithdrawalHistory(Long userId) {
-        return transactionRepository.findByUser_Id(userId).stream()
+        UserEntity user = userService.getUserEntityById(userId);
+        return transactionRepository.findByUser(user).stream()
                 .filter(transaction -> transaction.getAmount().compareTo(BigDecimal.ZERO) < 0)
                 .map(this::mapEntityToDto)
                 .collect(Collectors.toList());

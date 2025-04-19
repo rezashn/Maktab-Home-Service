@@ -16,6 +16,10 @@ public class UserCreditTransactionEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private OrderEntity order;
+
     @Column(nullable = false)
     private BigDecimal amount;
 
@@ -41,6 +45,14 @@ public class UserCreditTransactionEntity {
 
     public void setUser(UserEntity user) {
         this.user = user;
+    }
+
+    public OrderEntity getOrder() {
+        return order;
+    }
+
+    public void setOrder(OrderEntity order) {
+        this.order = order;
     }
 
     public BigDecimal getAmount() {

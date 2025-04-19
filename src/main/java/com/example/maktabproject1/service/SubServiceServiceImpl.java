@@ -1,29 +1,23 @@
 package com.example.maktabproject1.service;
 
+import com.example.maktabproject1.dto.ResponseDto;
 import com.example.maktabproject1.dto.SubServiceDto;
 import com.example.maktabproject1.entity.ServiceCategoryEntity;
 import com.example.maktabproject1.entity.SubServiceEntity;
-import com.example.maktabproject1.exception.DuplicateResourceException;
 import com.example.maktabproject1.exception.ResponseNotFoundException;
 import com.example.maktabproject1.repository.ServiceCategoryRepository;
 import com.example.maktabproject1.repository.SubServiceRepository;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-
+import java.util.stream.Collectors;
 
 @Service
 public class SubServiceServiceImpl implements SubServiceService {
 
     private final SubServiceRepository subServiceRepository;
     private final ServiceCategoryRepository serviceCategoryRepository;
-    private static final Logger log = LoggerFactory.getLogger(SubServiceServiceImpl.class);
-
 
     @Autowired
     public SubServiceServiceImpl(SubServiceRepository subServiceRepository, ServiceCategoryRepository serviceCategoryRepository) {
@@ -32,57 +26,55 @@ public class SubServiceServiceImpl implements SubServiceService {
     }
 
     @Override
-    public SubServiceDto createSubService(SubServiceDto dto) {
+    public ResponseDto<SubServiceDto> createSubService(SubServiceDto dto) {
         SubServiceEntity entity = mapDtoToEntity(dto);
         SubServiceEntity savedEntity = subServiceRepository.save(entity);
-        log.info("SubService created with ID: {}", savedEntity.getId());
-        return mapEntityToDto(savedEntity);
+        SubServiceDto subServiceDto = mapEntityToDto(savedEntity);
+        return new ResponseDto<>(true, subServiceDto, "SubService created successfully");
     }
 
     @Override
-    public SubServiceDto getSubServiceById(Long id) {
-        return mapEntityToDto(subServiceRepository.findById(id)
-                .orElseThrow(() -> new ResponseNotFoundException("SubService not found: " + id)));
-    }
-
-    @Override
-    public List<SubServiceDto> getAllSubServices() {
-        List<SubServiceDto> dtoList = new ArrayList<>();
-        List<SubServiceEntity> entities = subServiceRepository.findAll();
-        for (SubServiceEntity entity : entities) {
-            dtoList.add(mapEntityToDto(entity));
-        }
-        return dtoList;
-    }
-
-    @Override
-    public SubServiceDto updateSubService(Long id, SubServiceDto dto) {
+    public ResponseDto<SubServiceDto> getSubServiceById(Long id) {
         SubServiceEntity entity = subServiceRepository.findById(id)
                 .orElseThrow(() -> new ResponseNotFoundException("SubService not found: " + id));
-        entity.setId(id);
-        SubServiceEntity updatedEntity = subServiceRepository.save(mapDtoToEntity(dto));
-        log.info("SubService updated with ID: {}", updatedEntity.getId());
-        return mapEntityToDto(updatedEntity);
+        SubServiceDto subServiceDto = mapEntityToDto(entity);
+        return new ResponseDto<>(true, subServiceDto, "SubService fetched successfully");
     }
 
     @Override
-    public void deleteSubService(Long id) {
+    public ResponseDto<List<SubServiceDto>> getAllSubServices() {
+        List<SubServiceDto> subServiceDtos = subServiceRepository.findAll().stream()
+                .map(this::mapEntityToDto)
+                .collect(Collectors.toList());
+        return new ResponseDto<>(true, subServiceDtos, "All sub-services fetched successfully");
+    }
+
+    @Override
+    public ResponseDto<SubServiceDto> updateSubService(Long id, SubServiceDto dto) {
+        SubServiceEntity entity = subServiceRepository.findById(id)
+                .orElseThrow(() -> new ResponseNotFoundException("SubService not found: " + id));
+        entity.setName(dto.getName());
+        entity.setDescription(dto.getDescription());
+        ServiceCategoryEntity serviceCategory = serviceCategoryRepository.findById(dto.getServiceCategoryId())
+                .orElseThrow(() -> new ResponseNotFoundException("Service category not found: " + dto.getServiceCategoryId()));
+        entity.setServiceCategory(serviceCategory);
+        entity.setBasePrice(dto.getBasePrice());
+        SubServiceEntity updatedEntity = subServiceRepository.save(entity);
+        SubServiceDto updatedSubServiceDto = mapEntityToDto(updatedEntity);
+        return new ResponseDto<>(true, updatedSubServiceDto, "SubService updated successfully");
+    }
+
+    @Override
+    public ResponseDto<Void> deleteSubService(Long id) {
         if (!subServiceRepository.existsById(id)) {
             throw new ResponseNotFoundException("SubService not found: " + id);
         }
         subServiceRepository.deleteById(id);
-        log.info("SubService deleted with ID: {}", id);
-    }
-
-    @Override
-    public SubServiceEntity getSubServiceEntityById(Long subServiceId) {
-        return subServiceRepository.findById(subServiceId)
-                .orElseThrow(() -> new ResponseNotFoundException("SubService not found: " + subServiceId));
+        return new ResponseDto<>(true, null, "SubService deleted successfully");
     }
 
     private SubServiceEntity mapDtoToEntity(SubServiceDto dto) {
         SubServiceEntity entity = new SubServiceEntity();
-        entity.setId(dto.getId());
         entity.setName(dto.getName());
         entity.setDescription(dto.getDescription());
         ServiceCategoryEntity serviceCategory = serviceCategoryRepository.findById(dto.getServiceCategoryId())

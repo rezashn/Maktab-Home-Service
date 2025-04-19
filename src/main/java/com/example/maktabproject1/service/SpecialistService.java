@@ -4,9 +4,7 @@ import com.example.maktabproject1.dto.SpecialistDto;
 import com.example.maktabproject1.entity.SpecialistEntity;
 import com.example.maktabproject1.entity.SubServiceEntity;
 import com.example.maktabproject1.entity.UserEntity;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -18,7 +16,7 @@ public interface SpecialistService {
 
         List<SpecialistDto> getAllSpecialists();
 
-        SpecialistDto updateSpecialist(Long id, SpecialistDto specialistDTO);
+        SpecialistDto updateSpecialist(Long id, SpecialistDto dto);
 
         void deleteSpecialist(Long id);
 
@@ -31,5 +29,4 @@ public interface SpecialistService {
         List<SpecialistDto> searchSpecialistsBySubServiceAndRating(String subServiceName, BigDecimal minRating);
 
         List<SpecialistDto> searchSpecialistsBySubServiceEntity(SubServiceEntity subService);
-
 }

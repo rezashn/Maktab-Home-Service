@@ -1,21 +1,19 @@
 package com.example.maktabproject1.service;
 
+import com.example.maktabproject1.dto.ResponseDto;
 import com.example.maktabproject1.dto.SubServiceDto;
-import com.example.maktabproject1.entity.SubServiceEntity;
 
 import java.util.List;
 
 public interface SubServiceService {
 
-    SubServiceDto createSubService(SubServiceDto subServiceDTO);
+    ResponseDto<SubServiceDto> createSubService(SubServiceDto dto);
 
-    SubServiceDto getSubServiceById(Long id);
+    ResponseDto<SubServiceDto> getSubServiceById(Long id);
 
-    List<SubServiceDto> getAllSubServices();
+    ResponseDto<List<SubServiceDto>> getAllSubServices();
 
-    SubServiceDto updateSubService(Long id, SubServiceDto subServiceDTO);
+    ResponseDto<SubServiceDto> updateSubService(Long id, SubServiceDto dto);
 
-    void deleteSubService(Long id);
-
-    SubServiceEntity getSubServiceEntityById(Long subServiceId);
+    ResponseDto<Void> deleteSubService(Long id);
 }

@@ -1,11 +1,10 @@
 package com.example.maktabproject1.controller;
 
 import com.example.maktabproject1.dto.ReviewDto;
+import com.example.maktabproject1.dto.ResponseDto;
+import com.example.maktabproject1.exception.ReviewNotFoundException;
 import com.example.maktabproject1.service.ReviewService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,37 +16,64 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @Autowired
-    public ReviewController(ReviewService reviewService){
+    public ReviewController(ReviewService reviewService) {
         this.reviewService = reviewService;
     }
 
     @PostMapping
-    public ResponseEntity<ReviewDto> createReview(@Valid @RequestBody ReviewDto reviewDto){
-        ReviewDto createdReview = reviewService.createReview(reviewDto);
-        return new ResponseEntity<>(createdReview, HttpStatus.CREATED);
+    public ResponseDto<ReviewDto> createReview(@RequestBody ReviewDto reviewDto) {
+        try {
+            ReviewDto createdReview = reviewService.createReview(reviewDto);
+            return new ResponseDto<>(true, createdReview, null);
+        } catch (Exception e) {
+            return new ResponseDto<>(false, null, "Error creating review: " + e.getMessage());
+        }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ReviewDto> getReviewById(@PathVariable Long id) {
-        ReviewDto reviewDto = reviewService.getReviewById(id);
-        return new ResponseEntity<>(reviewDto, HttpStatus.OK);
+    public ResponseDto<ReviewDto> getReviewById(@PathVariable Long id) {
+        try {
+            ReviewDto reviewDto = reviewService.getReviewById(id);
+            return new ResponseDto<>(true, reviewDto, null);
+        } catch (ReviewNotFoundException e) {
+            return new ResponseDto<>(false, null, "Review not found with id: " + id);
+        } catch (Exception e) {
+            return new ResponseDto<>(false, null, "Error fetching review: " + e.getMessage());
+        }
     }
 
     @GetMapping
-    public ResponseEntity<List<ReviewDto>> getAllReviews() {
-        List<ReviewDto> reviewDtos = reviewService.getAllReviews();
-        return new ResponseEntity<>(reviewDtos, HttpStatus.OK);
+    public ResponseDto<List<ReviewDto>> getAllReviews() {
+        try {
+            List<ReviewDto> reviewDtos = reviewService.getAllReviews();
+            return new ResponseDto<>(true, reviewDtos, null);
+        } catch (Exception e) {
+            return new ResponseDto<>(false, null, "Error fetching reviews: " + e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ReviewDto> updateReview(@PathVariable Long id, @Valid @RequestBody ReviewDto reviewDto) {
-        ReviewDto updatedReview = reviewService.updateReview(id, reviewDto);
-        return new ResponseEntity<>(updatedReview, HttpStatus.OK);
+    public ResponseDto<ReviewDto> updateReview(@PathVariable Long id, @RequestBody ReviewDto reviewDto) {
+        try {
+            ReviewDto updatedReview = reviewService.updateReview(id, reviewDto);
+            return new ResponseDto<>(true, updatedReview, null);
+        } catch (ReviewNotFoundException e) {
+            return new ResponseDto<>(false, null, "Review not found with id: " + id);
+        } catch (Exception e) {
+            return new ResponseDto<>(false, null, "Error updating review: " + e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
-        reviewService.deleteReview(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseDto<Void> deleteReview(@PathVariable Long id) {
+        try {
+            reviewService.deleteReview(id);
+            return new ResponseDto<>(true, null, null);
+        } catch (ReviewNotFoundException e) {
+            return new ResponseDto<>(false, null, "Review not found with id: " + id);
+        } catch (Exception e) {
+            return new ResponseDto<>(false, null, "Error deleting review: " + e.getMessage());
+        }
     }
 }
+

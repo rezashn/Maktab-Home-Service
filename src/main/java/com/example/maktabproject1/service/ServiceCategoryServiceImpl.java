@@ -4,9 +4,6 @@ import com.example.maktabproject1.dto.ServiceCategoryDto;
 import com.example.maktabproject1.entity.ServiceCategoryEntity;
 import com.example.maktabproject1.exception.ResponseNotFoundException;
 import com.example.maktabproject1.repository.ServiceCategoryRepository;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +14,6 @@ import java.util.stream.Collectors;
 public class ServiceCategoryServiceImpl implements ServiceCategoryService {
 
     private final ServiceCategoryRepository serviceCategoryRepository;
-    private static final Logger log = LoggerFactory.getLogger(ServiceCategoryServiceImpl.class);
 
     @Autowired
     public ServiceCategoryServiceImpl(ServiceCategoryRepository serviceCategoryRepository) {
@@ -25,67 +21,55 @@ public class ServiceCategoryServiceImpl implements ServiceCategoryService {
     }
 
     @Override
-    public ServiceCategoryDto createServiceCategory(ServiceCategoryDto serviceCategoryDTO) {
-        ServiceCategoryEntity serviceCategoryEntity = mapDtoToEntity(serviceCategoryDTO);
-        ServiceCategoryEntity savedEntity = serviceCategoryRepository.save(serviceCategoryEntity);
-        log.info("Service category created with ID: {}", savedEntity.getId());
+    public ServiceCategoryDto createServiceCategory(ServiceCategoryDto serviceCategoryDto) {
+        ServiceCategoryEntity entity = mapDtoToEntity(serviceCategoryDto);
+        ServiceCategoryEntity savedEntity = serviceCategoryRepository.save(entity);
         return mapEntityToDto(savedEntity);
     }
 
     @Override
     public ServiceCategoryDto getServiceCategoryById(Long id) {
-        return serviceCategoryRepository.findById(id)
-                .map(this::mapEntityToDto)
-                .orElseThrow(() -> new ResponseNotFoundException("Service category not found: " + id));
+        ServiceCategoryEntity entity = serviceCategoryRepository.findById(id)
+                .orElseThrow(() -> new ResponseNotFoundException("Service Category not found with ID: " + id));
+        return mapEntityToDto(entity);
     }
 
     @Override
     public List<ServiceCategoryDto> getAllServiceCategories() {
-        return serviceCategoryRepository.findAll().stream()
-                .map(this::mapEntityToDto)
-                .collect(Collectors.toList());
+        List<ServiceCategoryEntity> entities = serviceCategoryRepository.findAll();
+        return entities.stream().map(this::mapEntityToDto).collect(Collectors.toList());
     }
 
     @Override
-    public ServiceCategoryDto updateServiceCategory(Long id, ServiceCategoryDto serviceCategoryDTO) {
-        ServiceCategoryEntity existingCategory = serviceCategoryRepository.findById(id)
-                .orElseThrow(() -> new ResponseNotFoundException("Service category not found: " + id));
-
-        ServiceCategoryEntity updatedCategory = mapDtoToEntity(serviceCategoryDTO);
-        updatedCategory.setId(id);
-        ServiceCategoryEntity savedUpdatedEntity = serviceCategoryRepository.save(updatedCategory);
-        log.info("Service category updated with ID: {}", savedUpdatedEntity.getId());
-        return mapEntityToDto(savedUpdatedEntity);
+    public ServiceCategoryDto updateServiceCategory(Long id, ServiceCategoryDto serviceCategoryDto) {
+        ServiceCategoryEntity entity = serviceCategoryRepository.findById(id)
+                .orElseThrow(() -> new ResponseNotFoundException("Service Category not found with ID: " + id));
+        entity.setName(serviceCategoryDto.getName());
+        entity.setDescription(serviceCategoryDto.getDescription());
+        ServiceCategoryEntity updatedEntity = serviceCategoryRepository.save(entity);
+        return mapEntityToDto(updatedEntity);
     }
 
     @Override
     public void deleteServiceCategory(Long id) {
         if (!serviceCategoryRepository.existsById(id)) {
-            throw new ResponseNotFoundException("Service category not found: " + id);
+            throw new ResponseNotFoundException("Service Category not found with ID: " + id);
         }
         serviceCategoryRepository.deleteById(id);
-        log.info("Service category deleted with ID: {}", id);
     }
 
-    private ServiceCategoryEntity mapDtoToEntity(ServiceCategoryDto serviceCategoryDTO) {
-        if (serviceCategoryDTO == null) {
-            throw new IllegalArgumentException("ServiceCategoryDTO cannot be null");
-        }
-        ServiceCategoryEntity serviceCategoryEntity = new ServiceCategoryEntity();
-        serviceCategoryEntity.setId(serviceCategoryDTO.getId());
-        serviceCategoryEntity.setName(serviceCategoryDTO.getName());
-        serviceCategoryEntity.setDescription(serviceCategoryDTO.getDescription());
-        return serviceCategoryEntity;
-    }
-
-    private ServiceCategoryDto mapEntityToDto(ServiceCategoryEntity serviceCategoryEntity) {
-        if (serviceCategoryEntity == null) {
-            throw new IllegalArgumentException("ServiceCategoryEntity cannot be null");
-        }
+    private ServiceCategoryDto mapEntityToDto(ServiceCategoryEntity entity) {
         ServiceCategoryDto dto = new ServiceCategoryDto();
-        dto.setId(serviceCategoryEntity.getId());
-        dto.setName(serviceCategoryEntity.getName());
-        dto.setDescription(serviceCategoryEntity.getDescription());
+        dto.setId(entity.getId());
+        dto.setName(entity.getName());
+        dto.setDescription(entity.getDescription());
         return dto;
+    }
+
+    private ServiceCategoryEntity mapDtoToEntity(ServiceCategoryDto dto) {
+        ServiceCategoryEntity entity = new ServiceCategoryEntity();
+        entity.setName(dto.getName());
+        entity.setDescription(dto.getDescription());
+        return entity;
     }
 }

@@ -122,7 +122,6 @@ public class OrderServiceImpl implements OrderService {
         }
         entity.setId(dto.getId());
         entity.setCustomer(userService.getUserEntityById(dto.getCustomerId()));
-        entity.setSubService(subServiceService.getSubServiceEntityById(dto.getSubServiceId()));
         entity.setDescription(dto.getDescription());
         entity.setSuggestedPrice(dto.getProposedPrice());
         entity.setOrderDate(dto.getOrderDate());

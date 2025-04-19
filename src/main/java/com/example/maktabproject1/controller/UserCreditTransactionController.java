@@ -1,6 +1,7 @@
 package com.example.maktabproject1.controller;
 
 import com.example.maktabproject1.dto.UserCreditTransactionDto;
+import com.example.maktabproject1.dto.ResponseDto;
 import com.example.maktabproject1.service.UserCreditTransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,21 +23,21 @@ public class UserCreditTransactionController {
     }
 
     @PostMapping("/deposit/{userId}")
-    public ResponseEntity<UserCreditTransactionDto> deposit(
+    public ResponseEntity<ResponseDto<UserCreditTransactionDto>> deposit(
             @PathVariable Long userId,
             @RequestParam BigDecimal amount,
             @RequestParam String description) {
-        UserCreditTransactionDto transaction = transactionService.deposit(userId, amount, description);
-        return new ResponseEntity<>(transaction, HttpStatus.CREATED);
+        ResponseDto<UserCreditTransactionDto> response = transactionService.deposit(userId, amount, description);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PostMapping("/withdraw/{userId}")
-    public ResponseEntity<UserCreditTransactionDto> withdraw(
+    public ResponseEntity<ResponseDto<UserCreditTransactionDto>> withdraw(
             @PathVariable Long userId,
             @RequestParam BigDecimal amount,
             @RequestParam String description) {
-        UserCreditTransactionDto transaction = transactionService.withdraw(userId, amount, description);
-        return new ResponseEntity<>(transaction, HttpStatus.CREATED);
+        ResponseDto<UserCreditTransactionDto> response = transactionService.withdraw(userId, amount, description);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping("/user/{userId}")

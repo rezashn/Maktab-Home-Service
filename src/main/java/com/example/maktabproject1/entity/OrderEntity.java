@@ -22,6 +22,9 @@ public class OrderEntity {
     @JoinColumn(name = "sub_service_id", nullable = false)
     private SubServiceEntity subService;
 
+    @Enumerated(EnumType.STRING)
+    private OrderStatusType status;
+
     private String description;
 
     private BigDecimal suggestedPrice;
@@ -30,10 +33,9 @@ public class OrderEntity {
 
     private LocalDateTime executionDate;
 
-    private String address;
+    private LocalDateTime paymentRequestTime;
 
-    @Enumerated(EnumType.STRING)
-    private OrderStatusType status;
+    private String address;
 
     @ManyToOne
     @JoinColumn(name = "specialist_id")
@@ -57,78 +59,6 @@ public class OrderEntity {
         this.id = id;
     }
 
-    public UserEntity getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(UserEntity customer) {
-        this.customer = customer;
-    }
-
-    public SubServiceEntity getSubService() {
-        return subService;
-    }
-
-    public void setSubService(SubServiceEntity subService) {
-        this.subService = subService;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public BigDecimal getSuggestedPrice() {
-        return suggestedPrice;
-    }
-
-    public void setSuggestedPrice(BigDecimal suggestedPrice) {
-        this.suggestedPrice = suggestedPrice;
-    }
-
-    public LocalDateTime getOrderDate() {
-        return orderDate;
-    }
-
-    public void setOrderDate(LocalDateTime orderDate) {
-        this.orderDate = orderDate;
-    }
-
-    public LocalDateTime getExecutionDate() {
-        return executionDate;
-    }
-
-    public void setExecutionDate(LocalDateTime executionDate) {
-        this.executionDate = executionDate;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public OrderStatusType getStatus() {
-        return status;
-    }
-
-    public void setStatus(OrderStatusType status) {
-        this.status = status;
-    }
-
-    public SpecialistEntity getSpecialist() {
-        return specialist;
-    }
-
-    public void setSpecialist(SpecialistEntity specialist) {
-        this.specialist = specialist;
-    }
-
     public OfferEntity getAcceptedOffer() {
         return acceptedOffer;
     }
@@ -145,34 +75,83 @@ public class OrderEntity {
         this.offers = offers;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        OrderEntity that = (OrderEntity) o;
-        return Objects.equals(id, that.id) && Objects.equals(customer, that.customer) && Objects.equals(subService, that.subService) && Objects.equals(description, that.description) && Objects.equals(suggestedPrice, that.suggestedPrice) && Objects.equals(orderDate, that.orderDate) && Objects.equals(executionDate, that.executionDate) && Objects.equals(address, that.address) && status == that.status && Objects.equals(specialist, that.specialist) && Objects.equals(acceptedOffer, that.acceptedOffer) && Objects.equals(offers, that.offers);
+    public SpecialistEntity getSpecialist() {
+        return specialist;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, customer, subService, description, suggestedPrice, orderDate, executionDate, address, status, specialist, acceptedOffer, offers);
+    public void setSpecialist(SpecialistEntity specialist) {
+        this.specialist = specialist;
     }
 
-    @Override
-    public String toString() {
-        return "OrderEntity{" +
-                "id=" + id +
-                ", customer=" + customer +
-                ", subService=" + subService +
-                ", description='" + description + '\'' +
-                ", suggestedPrice=" + suggestedPrice +
-                ", orderDate=" + orderDate +
-                ", executionDate=" + executionDate +
-                ", address='" + address + '\'' +
-                ", status=" + status +
-                ", specialist=" + specialist +
-                ", acceptedOffer=" + acceptedOffer +
-                ", offers=" + offers +
-                '}';
+    public OrderStatusType getStatus() {
+        return status;
+    }
+
+    public void setStatus(OrderStatusType status) {
+        this.status = status;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public UserEntity getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(UserEntity customer) {
+        this.customer = customer;
+    }
+
+    public SubServiceEntity getSubService() {
+        return subService;
+    }
+
+    public void setSubService(SubServiceEntity subService) {
+        this.subService = subService;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public LocalDateTime getPaymentRequestTime() {
+        return paymentRequestTime;
+    }
+
+    public void setPaymentRequestTime(LocalDateTime paymentRequestTime) {
+        this.paymentRequestTime = paymentRequestTime;
+    }
+
+    public LocalDateTime getExecutionDate() {
+        return executionDate;
+    }
+
+    public void setExecutionDate(LocalDateTime executionDate) {
+        this.executionDate = executionDate;
+    }
+
+    public LocalDateTime getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(LocalDateTime orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public BigDecimal getSuggestedPrice() {
+        return suggestedPrice;
+    }
+
+    public void setSuggestedPrice(BigDecimal suggestedPrice) {
+        this.suggestedPrice = suggestedPrice;
     }
 }

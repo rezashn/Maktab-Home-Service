@@ -25,15 +25,11 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
     private final PasswordEncoder passwordEncoder;
-    private final SpecialistService specialistService;
 
-
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, SpecialistService specialistService) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.specialistService = specialistService;
         this.passwordEncoder = passwordEncoder;
     }
-
 
     @Override
     public UserDto registerUser(UserDto dto) {
@@ -51,14 +47,9 @@ public class UserServiceImpl implements UserService {
 
         UserEntity savedEntity = userRepository.save(entity);
 
-        if (entity.getRole() == UserRoleType.SPECIALIST) {
-            specialistService.createSpecialistFromUser(savedEntity);
-        }
-
         log.info("User registered with ID: {}", savedEntity.getId());
         return mapEntityToDto(savedEntity);
     }
-
 
     @Override
     public UserDto getUserById(Long id) {
@@ -120,7 +111,6 @@ public class UserServiceImpl implements UserService {
                 .map(this::mapEntityToDto)
                 .collect(Collectors.toList());
     }
-
 
     @Override
     public UserEntity getUserEntityById(Long id) {
