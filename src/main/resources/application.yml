@@ -7,10 +7,21 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-
-  servlet:
-    multipart:
-      max-file-size: 300KB
-      max-request-size: 300KB
       #todo: what if we want to update sth else like a video instead of an image!?
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: irezashn@gmail.com
+    password: PutPasswordHere
+    protocol: smtp
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+
 

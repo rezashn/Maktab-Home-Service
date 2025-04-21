@@ -2,6 +2,8 @@ package com.example.maktabproject1.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -20,12 +22,12 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .authorizeHttpRequests()
-                // Using RequestMatcher explicitly for '/login' and '/register'
                 .requestMatchers(new AntPathRequestMatcher("/login")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/register")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasRole("ADMIN")
                 .requestMatchers(new AntPathRequestMatcher("/specialist/**")).hasRole("SPECIALIST")
                 .requestMatchers(new AntPathRequestMatcher("/customer/**")).hasRole("CUSTOMER")
+                .requestMatchers(new AntPathRequestMatcher("/api/auth/verify")).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -34,5 +36,10 @@ public class SecurityConfig {
                 .and()
                 .logout()
                 .permitAll();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
     }
 }
