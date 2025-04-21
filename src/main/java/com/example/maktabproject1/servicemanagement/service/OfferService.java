@@ -1,6 +1,7 @@
 package com.example.maktabproject1.servicemanagement.service;
 
 import com.example.maktabproject1.servicemanagement.dto.OfferDTO;
+import com.example.maktabproject1.servicemanagement.dto.UpdateOfferDto;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ public interface OfferService {
 
     List<OfferDTO> getAllOffers();
 
-    OfferDTO updateOffer(Long id, OfferDTO offerDTO);
+    OfferDTO updateOffer(Long id, UpdateOfferDto offerDTO);
 
     void deleteOffer(Long id);
 

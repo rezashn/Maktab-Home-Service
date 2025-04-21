@@ -1,13 +1,18 @@
 package com.example.maktabproject1.servicemanagement.service;
 
 import com.example.maktabproject1.servicemanagement.dto.OfferDTO;
+import com.example.maktabproject1.servicemanagement.dto.UpdateOfferDto;
 import com.example.maktabproject1.servicemanagement.entity.OfferEntity;
 import com.example.maktabproject1.servicemanagement.entity.OrderEntity;
 import com.example.maktabproject1.servicemanagement.entity.SpecialistEntity;
+import com.example.maktabproject1.servicemanagement.exception.OfferNotFoundException;
+import com.example.maktabproject1.servicemanagement.exception.OrderNotFoundException;
+import com.example.maktabproject1.servicemanagement.exception.SpecialistNotFoundException;
 import com.example.maktabproject1.servicemanagement.repository.OfferRepository;
 import com.example.maktabproject1.servicemanagement.repository.OrderRepository;
 import com.example.maktabproject1.usermanagement.Repository.SpecialistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -57,10 +62,16 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
-    public OfferDTO updateOffer(Long id, OfferDTO offerDTO) {
-        OfferEntity offerEntity = offerRepository.findById(id).orElseThrow();
-        SpecialistEntity specialist = specialistRepository.findById(offerDTO.getSpecialistId()).orElseThrow();
-        OrderEntity order = orderRepository.findById(offerDTO.getOrderId()).orElseThrow();
+    public OfferDTO updateOffer(Long id, UpdateOfferDto offerDTO) {
+        // Retrieve the existing offer entity, throwing a custom exception if not found
+        OfferEntity offerEntity = offerRepository.findById(id)
+                .orElseThrow(() -> new OfferNotFoundException("Offer with ID " + id + " not found"));
+
+        SpecialistEntity specialist = specialistRepository.findById(offerDTO.getSpecialistId())
+                .orElseThrow(() -> new SpecialistNotFoundException("Specialist with ID " + offerDTO.getSpecialistId() + " not found"));
+
+        OrderEntity order = orderRepository.findById(offerDTO.getOrderId())
+                .orElseThrow(() -> new OrderNotFoundException("Order with ID " + offerDTO.getOrderId() + " not found"));
 
         offerEntity.setSpecialist(specialist);
         offerEntity.setOrder(order);
@@ -70,7 +81,6 @@ public class OfferServiceImpl implements OfferService {
         OfferEntity updatedOffer = offerRepository.save(offerEntity);
         return mapOfferEntityToDto(updatedOffer);
     }
-
     @Override
     public void deleteOffer(Long id) {
         offerRepository.deleteById(id);

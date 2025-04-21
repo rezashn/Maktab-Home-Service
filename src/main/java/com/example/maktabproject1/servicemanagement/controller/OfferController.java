@@ -1,5 +1,8 @@
 package com.example.maktabproject1.servicemanagement.controller;
 
+import com.example.maktabproject1.servicemanagement.dto.UpdateOfferDto;
+import com.example.maktabproject1.servicemanagement.exception.InvalidDataInputException;
+import com.example.maktabproject1.servicemanagement.exception.ResponseNotFoundException;
 import com.example.maktabproject1.servicemanagement.service.OfferService;
 import com.example.maktabproject1.servicemanagement.dto.OfferDTO;
 import com.example.maktabproject1.ResponseDto;
@@ -53,14 +56,19 @@ public class OfferController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseDto<OfferDTO>> updateOffer(@PathVariable Long id, @Valid @RequestBody OfferDTO offerDTO) {
+    public ResponseEntity<ResponseDto<OfferDTO>> updateOffer(@PathVariable Long id, @Valid @RequestBody UpdateOfferDto offerDTO) {
         try {
             OfferDTO updatedOffer = offerService.updateOffer(id, offerDTO);
             return new ResponseEntity<>(new ResponseDto<>(true, updatedOffer, "Offer updated successfully"), HttpStatus.OK);
-        } catch (Exception e) {
+        } catch (ResponseNotFoundException e) {
+            return new ResponseEntity<>(new ResponseDto<>(false, null, "Offer not found"), HttpStatus.NOT_FOUND);
+        } catch (InvalidDataInputException e) {
             return new ResponseEntity<>(new ResponseDto<>(false, null, e.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ResponseDto<>(false, null, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDto<Void>> deleteOffer(@PathVariable Long id) {

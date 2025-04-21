@@ -17,13 +17,16 @@ import java.time.temporal.ChronoUnit;
 @Service
 public class PaymentService {
 
-    @Autowired
-    private OrderRepository orderRepository;
-
-    @Autowired
-    private UserCreditTransactionRepository userCreditTransactionRepository;
-
     private static final int PAYMENT_TIMEOUT_MINUTES = 10;
+
+    private final OrderRepository orderRepository;
+    private final UserCreditTransactionRepository userCreditTransactionRepository;
+
+    @Autowired
+    public PaymentService(OrderRepository orderRepository, UserCreditTransactionRepository userCreditTransactionRepository) {
+        this.orderRepository = orderRepository;
+        this.userCreditTransactionRepository = userCreditTransactionRepository;
+    }
 
     public String processPayment(Long orderId, String captchaAnswer, boolean useCredit) {
         OrderEntity order = orderRepository.findById(orderId)
@@ -49,32 +52,40 @@ public class PaymentService {
         }
 
         if (useCredit) {
-            UserEntity user = order.getCustomer();
-            BigDecimal userCreditBalance = calculateUserCreditBalance(user);
-
-            if (userCreditBalance.compareTo(order.getSuggestedPrice()) >= 0) {
-                UserCreditTransactionEntity transaction = new UserCreditTransactionEntity();
-                transaction.setUser(user);
-                transaction.setAmount(order.getSuggestedPrice().negate());
-                transaction.setTransactionDate(LocalDateTime.now());
-                transaction.setDescription("Payment for Order #" + orderId);
-                userCreditTransactionRepository.save(transaction);
-
-                order.setStatus(OrderStatusType.PAID);
-                orderRepository.save(order);
-                return "Payment successful with credits! Order is marked as PAID.";
-            } else {
-                return "Not enough credit to complete the payment.";
-            }
+            return processCreditPayment(order);
         } else {
-            boolean paymentSuccessful = processCardPayment(order.getSuggestedPrice());
-            if (paymentSuccessful) {
-                order.setStatus(OrderStatusType.PAID);
-                orderRepository.save(order);
-                return "Payment successful via card! Order is marked as PAID.";
-            } else {
-                return "Card payment failed. Please try again.";
-            }
+            return processCardPayment(order);
+        }
+    }
+
+    private String processCreditPayment(OrderEntity order) {
+        UserEntity user = order.getCustomer();
+        BigDecimal userCreditBalance = calculateUserCreditBalance(user);
+
+        if (userCreditBalance.compareTo(order.getSuggestedPrice()) >= 0) {
+            UserCreditTransactionEntity transaction = new UserCreditTransactionEntity();
+            transaction.setUser(user);
+            transaction.setAmount(order.getSuggestedPrice().negate());
+            transaction.setTransactionDate(LocalDateTime.now());
+            transaction.setDescription("Payment for Order #" + order.getId());
+            userCreditTransactionRepository.save(transaction);
+
+            order.setStatus(OrderStatusType.PAID);
+            orderRepository.save(order);
+            return "Payment successful with credits! Order is marked as PAID.";
+        } else {
+            return "Not enough credit to complete the payment.";
+        }
+    }
+
+    private String processCardPayment(OrderEntity order) {
+        boolean paymentSuccessful = processCardPayment(order.getSuggestedPrice());
+        if (paymentSuccessful) {
+            order.setStatus(OrderStatusType.PAID);
+            orderRepository.save(order);
+            return "Payment successful via card! Order is marked as PAID.";
+        } else {
+            return "Card payment failed. Please try again.";
         }
     }
 
