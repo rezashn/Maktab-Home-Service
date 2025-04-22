@@ -49,18 +49,24 @@ public class UserServiceImpl implements UserService {
         }
 
         UserEntity entity = mapDtoToEntity(dto);
-        entity.setStatus(UserStatusType.NEW);
         entity.setRole(dto.getRole() != null ? dto.getRole() : UserRoleType.CUSTOMER);
-        entity.setRegistrationDate(LocalDateTime.now());
+
+        if (entity.getRole() == UserRoleType.SPECIALIST) {
+            entity.setStatus(UserStatusType.PENDING);
+        } else {
+            entity.setStatus(UserStatusType.NEW);
+        }
 
         String hashedPassword = passwordEncoder.encode(dto.getPassword());
         entity.setPassword(hashedPassword);
+        entity.setRegistrationDate(LocalDateTime.now());
 
         UserEntity savedUser = userRepository.save(entity);
         String token = verificationTokenServiceImpl.createToken(savedUser);
         emailService.sendVerificationEmail(savedUser, token);
 
         log.info("User registered with ID: {}", savedUser.getId());
+
         return mapEntityToDto(savedUser);
     }
 

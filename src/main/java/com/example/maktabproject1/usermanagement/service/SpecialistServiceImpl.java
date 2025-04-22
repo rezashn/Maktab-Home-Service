@@ -1,7 +1,7 @@
 package com.example.maktabproject1.usermanagement.service;
 
 import com.example.maktabproject1.servicemanagement.dto.SpecialistDto;
-import com.example.maktabproject1.servicemanagement.entity.SpecialistEntity;
+import com.example.maktabproject1.usermanagement.entity.SpecialistEntity;
 import com.example.maktabproject1.servicemanagement.entity.SubServiceEntity;
 import com.example.maktabproject1.servicemanagement.exception.ResponseNotFoundException;
 import com.example.maktabproject1.usermanagement.Repository.SpecialistRepository;
@@ -62,6 +62,19 @@ public class SpecialistServiceImpl implements SpecialistService {
                 })
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<SpecialistResponseDto> getSpecialistsBySubServiceName(String subServiceName) {
+        SubServiceEntity subService = subServiceRepository.findByName(subServiceName)
+                .orElseThrow(() -> new RuntimeException("Sub-service not found: " + subServiceName));
+
+        List<SpecialistEntity> specialists = specialistRepository.findBySubServices(subService);
+
+        return specialists.stream()
+                .map(specialist -> mapToResponseDto(specialist.getUser(), specialist))
+                .toList();
+    }
+
 
 
     @Override
@@ -151,6 +164,10 @@ public class SpecialistServiceImpl implements SpecialistService {
                 .map(specialist -> mapToResponseDto(specialist.getUser(), specialist))
                 .collect(Collectors.toList());
 
+    }
+
+    public void save(SpecialistEntity specialistEntity){
+        specialistRepository.save(specialistEntity);
     }
 
 

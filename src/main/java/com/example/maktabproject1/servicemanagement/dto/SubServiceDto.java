@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 public class SubServiceDto {
+
     private Long id;
 
     @NotNull(message = "Name is required")
@@ -20,9 +21,6 @@ public class SubServiceDto {
     private Long serviceCategoryId;
 
     private BigDecimal basePrice;
-
-    public SubServiceDto() {
-    }
 
     public Long getId() {
         return id;
@@ -69,7 +67,11 @@ public class SubServiceDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SubServiceDto that = (SubServiceDto) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.equals(serviceCategoryId, that.serviceCategoryId) && Objects.equals(basePrice, that.basePrice);
+        return Objects.equals(id, that.id) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(description, that.description) &&
+                Objects.equals(serviceCategoryId, that.serviceCategoryId) &&
+                Objects.equals(basePrice, that.basePrice);
     }
 
     @Override

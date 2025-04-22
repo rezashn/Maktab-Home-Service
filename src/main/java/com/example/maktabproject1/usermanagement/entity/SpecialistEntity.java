@@ -1,10 +1,10 @@
-package com.example.maktabproject1.servicemanagement.entity;
+package com.example.maktabproject1.usermanagement.entity;
 
-import com.example.maktabproject1.usermanagement.entity.UserEntity;
+import com.example.maktabproject1.servicemanagement.entity.OfferEntity;
+import com.example.maktabproject1.servicemanagement.entity.SubServiceEntity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Table(name = "specialists")
@@ -29,9 +29,6 @@ public class SpecialistEntity {
     @OneToMany(mappedBy = "specialist")
     private List<OfferEntity> offers;
 
-    public SpecialistEntity() {
-    }
-
     public Long getId() {
         return id;
     }
@@ -40,20 +37,20 @@ public class SpecialistEntity {
         this.id = id;
     }
 
-    public UserEntity getUser() {
-        return user;
-    }
-
-    public void setUser(UserEntity user) {
-        this.user = user;
-    }
-
     public BigDecimal getRating() {
         return rating;
     }
 
     public void setRating(BigDecimal rating) {
         this.rating = rating;
+    }
+
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
     }
 
     public List<SubServiceEntity> getSubServices() {
@@ -67,20 +64,8 @@ public class SpecialistEntity {
     public List<OfferEntity> getOffers() {
         return offers;
     }
+
     public void setOffers(List<OfferEntity> offers) {
         this.offers = offers;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        SpecialistEntity that = (SpecialistEntity) o;
-        return Objects.equals(id, that.id) && Objects.equals(user, that.user)&& Objects.equals(rating, that.rating) && Objects.equals(subServices, that.subServices) && Objects.equals(offers, that.offers);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, user,  rating, subServices, offers);
     }
 }

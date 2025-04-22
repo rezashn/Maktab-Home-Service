@@ -1,7 +1,8 @@
 package com.example.maktabproject1.servicemanagement.service;
 
 import com.example.maktabproject1.servicemanagement.dto.OrderDto;
-import com.example.maktabproject1.servicemanagement.entity.SpecialistEntity;
+import com.example.maktabproject1.servicemanagement.dto.UpdateOrderDto;
+import com.example.maktabproject1.usermanagement.entity.SpecialistEntity;
 import com.example.maktabproject1.servicemanagement.exception.ResponseNotFoundException;
 import com.example.maktabproject1.servicemanagement.repository.OfferRepository;
 import com.example.maktabproject1.servicemanagement.repository.OrderRepository;
@@ -56,13 +57,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderDto updateOrder(Long orderId, OrderDto dto) {
-        OrderEntity existingOrder = getOrderEntityById(orderId);
-        OrderEntity updatedOrder = mapDtoToEntity(dto);
-        updatedOrder.setId(orderId);
-        OrderEntity savedUpdatedEntity = orderRepository.save(updatedOrder);
-        log.info("Order updated with ID: {}", savedUpdatedEntity.getId());
-        return mapEntityToDto(savedUpdatedEntity);
+    public OrderDto updateOrder(Long orderId, UpdateOrderDto dto) {
+        OrderEntity existingOrder = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResponseNotFoundException("Order not found with id: " + orderId));
+            OrderEntity updatedOrder = mapDtoToEntity(dto);
+            updatedOrder.setId(orderId);
+            OrderEntity savedUpdatedEntity = orderRepository.save(updatedOrder);
+            log.info("Order updated with ID: {}", savedUpdatedEntity.getId());
+            return mapEntityToDto(savedUpdatedEntity);
     }
 
     @Override
@@ -143,6 +145,31 @@ public class OrderServiceImpl implements OrderService {
         return entity;
     }
 
+    private OrderEntity mapDtoToEntity(UpdateOrderDto dto) {
+        OrderEntity entity = new OrderEntity();
+        if (dto == null) {
+            throw new IllegalArgumentException("Update Order DTO cannot be null");
+        }
+        entity.setId(dto.getId());
+        entity.setCustomer(userService.getUserEntityById(dto.getCustomerId()));
+        entity.setDescription(dto.getDescription());
+        entity.setSuggestedPrice(dto.getProposedPrice());
+        entity.setOrderDate(dto.getOrderDate());
+        entity.setAddress(dto.getAddress());
+        if (dto.getOrderStatus() == null) {
+            throw new IllegalArgumentException("Order status cannot be null");
+        }
+        try {
+            entity.setStatus(OrderStatusType.valueOf(dto.getOrderStatus()));
+        } catch (IllegalArgumentException e) {
+            throw new InvalidOrderStatusException("Invalid order status: " + dto.getOrderStatus());
+        }
+        if (dto.getSpecialistId() != null) {
+            entity.setSpecialist(specialistService.getSpecialistEntityById(dto.getSpecialistId()));
+        }
+        return entity;
+    }
+
     private OrderDto mapEntityToDto(OrderEntity entity) {
         OrderDto dto = new OrderDto();
         if (entity == null) {
@@ -161,6 +188,8 @@ public class OrderServiceImpl implements OrderService {
         }
         return dto;
     }
+
+
 
     @Override
     public void startOrder(Long orderId) {

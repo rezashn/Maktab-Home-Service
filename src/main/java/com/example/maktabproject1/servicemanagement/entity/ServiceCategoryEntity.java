@@ -2,9 +2,7 @@ package com.example.maktabproject1.servicemanagement.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Table(name = "service_categories")
@@ -22,9 +20,6 @@ public class ServiceCategoryEntity {
 
     @OneToMany(mappedBy = "serviceCategory", cascade = CascadeType.REMOVE)
     private List<SubServiceEntity> subServices;
-
-    public ServiceCategoryEntity() {
-    }
 
     public Long getId() {
         return id;
@@ -53,29 +48,8 @@ public class ServiceCategoryEntity {
     public List<SubServiceEntity> getSubServices() {
         return subServices;
     }
+
     public void setSubServices(List<SubServiceEntity> subServices) {
         this.subServices = subServices;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ServiceCategoryEntity that = (ServiceCategoryEntity) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(description, that.description);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, description);
-    }
-
-    @Override
-    public String toString() {
-        return "ServiceCategoryEntity{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                '}';
     }
 }

@@ -1,16 +1,14 @@
 package com.example.maktabproject1.usermanagement.controller;
 
+import com.example.maktabproject1.Configuration.CustomUserDetails;
 import com.example.maktabproject1.ResponseDto;
-import com.example.maktabproject1.servicemanagement.dto.SpecialistDto;
 import com.example.maktabproject1.usermanagement.dto.UserDto;
 import com.example.maktabproject1.usermanagement.dto.ChangePasswordDto;
 import com.example.maktabproject1.usermanagement.entity.UserRoleType;
 import com.example.maktabproject1.usermanagement.entity.UserStatusType;
 import com.example.maktabproject1.servicemanagement.exception.ResponseNotFoundException;
 import com.example.maktabproject1.usermanagement.service.UserService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
@@ -32,7 +29,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping
+    @PostMapping("/register")
     public ResponseDto<UserDto> registerUser(@RequestBody UserDto userDto) {
         try {
             UserDto createdUser = userService.registerUser(userDto);
@@ -42,42 +39,28 @@ public class UserController {
         }
     }
 
-    @GetMapping("/admin/pending-specialists")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<UserDto>> getPendingSpecialists() {
-        List<UserDto> pendingSpecialists = userService.getUsersByStatus(UserStatusType.PENDING).stream()
-                .filter(user -> user.getRole() == UserRoleType.SPECIALIST)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(pendingSpecialists);
-    }
-
-    @PostMapping("/admin/approve-specialist/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> approveSpecialist(@PathVariable Long id) {
-        userService.updateUserStatus(id, UserStatusType.APPROVED);
-        return ResponseEntity.ok("Specialist approved successfully.");
-    }
-
-    @PostMapping("/admin/reject-specialist/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> rejectSpecialist(@PathVariable Long id) {
-        userService.updateUserStatus(id, UserStatusType.REJECTED);
-        return ResponseEntity.ok("Specialist rejected.");
-    }
 
     @GetMapping("/profile")
     public ResponseDto<UserDto> getCurrentUser() {
-        Long userId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        try {
-            UserDto userDto = userService.getUserById(userId);
-            return new ResponseDto<>(true, userDto, null);
-        } catch (ResponseNotFoundException e) {
-            return new ResponseDto<>(false, null, "User not found.");
-        } catch (Exception e) {
-            return new ResponseDto<>(false, null, "Error fetching user profile: " + e.getMessage());
+        if (principal instanceof CustomUserDetails) {
+            CustomUserDetails userDetails = (CustomUserDetails) principal;
+            Long userId = userDetails.getId();
+
+            try {
+                UserDto userDto = userService.getUserById(userId);
+                return new ResponseDto<>(true, userDto, null);
+            } catch (ResponseNotFoundException e) {
+                return new ResponseDto<>(false, null, "User not found.");
+            } catch (Exception e) {
+                return new ResponseDto<>(false, null, "Error fetching user profile: " + e.getMessage());
+            }
+        } else {
+            return new ResponseDto<>(false, null, "Invalid user session.");
         }
     }
+
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")

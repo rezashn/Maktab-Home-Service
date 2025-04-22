@@ -1,5 +1,6 @@
 package com.example.maktabproject1.servicemanagement.entity;
 
+import com.example.maktabproject1.usermanagement.entity.SpecialistEntity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -21,15 +22,27 @@ public class OfferEntity {
     @JoinColumn(name = "order_id", nullable = false)
     private OrderEntity order;
 
-    private LocalDateTime offerDate;
+    @Column(nullable = false)
+    private LocalDateTime offerDate = LocalDateTime.now();
 
+    @Column(nullable = false)
     private BigDecimal suggestedPrice;
 
+    @Column(nullable = false)
     private int executionTime;
 
     private LocalDateTime startTime;
 
-    public OfferEntity() {
+    public OfferEntity() {}
+
+    public OfferEntity(SpecialistEntity specialist, OrderEntity order, BigDecimal suggestedPrice,
+                       int executionTime, LocalDateTime startTime) {
+        this.specialist = specialist;
+        this.order = order;
+        this.suggestedPrice = suggestedPrice;
+        this.executionTime = executionTime;
+        this.startTime = startTime;
+        this.offerDate = LocalDateTime.now();
     }
 
     public Long getId() {
@@ -40,14 +53,6 @@ public class OfferEntity {
         this.id = id;
     }
 
-    public SpecialistEntity getSpecialist() {
-        return specialist;
-    }
-
-    public void setSpecialist(SpecialistEntity specialist) {
-        this.specialist = specialist;
-    }
-
     public OrderEntity getOrder() {
         return order;
     }
@@ -56,12 +61,12 @@ public class OfferEntity {
         this.order = order;
     }
 
-    public LocalDateTime getOfferDate() {
-        return offerDate;
+    public SpecialistEntity getSpecialist() {
+        return specialist;
     }
 
-    public void setOfferDate(LocalDateTime offerDate) {
-        this.offerDate = offerDate;
+    public void setSpecialist(SpecialistEntity specialist) {
+        this.specialist = specialist;
     }
 
     public BigDecimal getSuggestedPrice() {
@@ -70,6 +75,14 @@ public class OfferEntity {
 
     public void setSuggestedPrice(BigDecimal suggestedPrice) {
         this.suggestedPrice = suggestedPrice;
+    }
+
+    public LocalDateTime getOfferDate() {
+        return offerDate;
+    }
+
+    public void setOfferDate(LocalDateTime offerDate) {
+        this.offerDate = offerDate;
     }
 
     public int getExecutionTime() {
@@ -93,20 +106,20 @@ public class OfferEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OfferEntity that = (OfferEntity) o;
-        return executionTime == that.executionTime && Objects.equals(id, that.id) && Objects.equals(specialist, that.specialist) && Objects.equals(order, that.order) && Objects.equals(offerDate, that.offerDate) && Objects.equals(suggestedPrice, that.suggestedPrice) && Objects.equals(startTime, that.startTime);
+        return id != null && id.equals(that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, specialist, order, offerDate, suggestedPrice, executionTime, startTime);
+        return Objects.hash(id);
     }
 
     @Override
     public String toString() {
         return "OfferEntity{" +
                 "id=" + id +
-                ", specialist=" + specialist +
-                ", order=" + order +
+                ", specialist=" + specialist.getId() + // assuming SpecialistEntity has getId method
+                ", order=" + order.getId() + // assuming OrderEntity has getId method
                 ", offerDate=" + offerDate +
                 ", suggestedPrice=" + suggestedPrice +
                 ", executionTime=" + executionTime +

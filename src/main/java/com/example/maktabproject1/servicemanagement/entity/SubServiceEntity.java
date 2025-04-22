@@ -2,7 +2,6 @@ package com.example.maktabproject1.servicemanagement.entity;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.util.Objects;
 
 @Entity
 @Table(name = "sub_services")
@@ -24,23 +23,12 @@ public class SubServiceEntity {
     @JoinColumn(name = "service_category_id", nullable = false)
     private ServiceCategoryEntity serviceCategory;
 
-    public SubServiceEntity() {
-    }
-
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getDescription() {
@@ -51,14 +39,6 @@ public class SubServiceEntity {
         this.description = description;
     }
 
-    public BigDecimal getBasePrice() {
-        return basePrice;
-    }
-
-    public void setBasePrice(BigDecimal basePrice) {
-        this.basePrice = basePrice;
-    }
-
     public ServiceCategoryEntity getServiceCategory() {
         return serviceCategory;
     }
@@ -67,27 +47,19 @@ public class SubServiceEntity {
         this.serviceCategory = serviceCategory;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        SubServiceEntity that = (SubServiceEntity) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.equals(basePrice, that.basePrice) && Objects.equals(serviceCategory, that.serviceCategory);
+    public BigDecimal getBasePrice() {
+        return basePrice;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, description, basePrice, serviceCategory);
+    public void setBasePrice(BigDecimal basePrice) {
+        this.basePrice = basePrice;
     }
 
-    @Override
-    public String toString() {
-        return "SubServiceEntity{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", basePrice=" + basePrice +
-                ", serviceCategory=" + serviceCategory +
-                '}';
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

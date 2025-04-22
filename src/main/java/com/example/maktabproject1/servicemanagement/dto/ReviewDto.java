@@ -20,9 +20,6 @@ public class ReviewDto {
     @Size(max = 500, message = "500 characters or less are ")
     private String comment;
 
-    public ReviewDto() {
-    }
-
     public Long getId() {
         return id;
     }
@@ -59,8 +56,11 @@ public class ReviewDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ReviewDto that = (ReviewDto) o;
-        return rating == that.rating && Objects.equals(id, that.id) && Objects.equals(orderId, that.orderId) && Objects.equals(comment, that.comment);
+        ReviewDto reviewDto = (ReviewDto) o;
+        return rating == reviewDto.rating &&
+                Objects.equals(id, reviewDto.id) &&
+                Objects.equals(orderId, reviewDto.orderId) &&
+                Objects.equals(comment, reviewDto.comment);
     }
 
     @Override

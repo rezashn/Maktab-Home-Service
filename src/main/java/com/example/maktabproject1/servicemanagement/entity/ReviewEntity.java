@@ -3,6 +3,7 @@ package com.example.maktabproject1.servicemanagement.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import java.util.Objects;
 
 @Entity
@@ -21,9 +22,16 @@ public class ReviewEntity {
     @Max(5)
     private int rating;
 
+    @Size(max = 500, message = "Comment cannot exceed 500 characters")
     private String comment;
 
     public ReviewEntity() {
+    }
+
+    public ReviewEntity(OrderEntity order, int rating, String comment) {
+        this.order = order;
+        this.rating = rating;
+        this.comment = comment;
     }
 
     public Long getId() {
@@ -63,7 +71,10 @@ public class ReviewEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ReviewEntity that = (ReviewEntity) o;
-        return rating == that.rating && Objects.equals(id, that.id) && Objects.equals(order, that.order) && Objects.equals(comment, that.comment);
+        return rating == that.rating &&
+                Objects.equals(id, that.id) &&
+                Objects.equals(order, that.order) &&
+                Objects.equals(comment, that.comment);
     }
 
     @Override

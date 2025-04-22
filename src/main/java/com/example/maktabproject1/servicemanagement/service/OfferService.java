@@ -19,5 +19,7 @@ public interface OfferService {
 
     List<OfferDTO> getOffersByOrderId(Long orderId);
 
+    List<OfferDTO> getOffersByOrder(Long orderId);
+
     void acceptOffer(Long orderId, Long offerId);
 }

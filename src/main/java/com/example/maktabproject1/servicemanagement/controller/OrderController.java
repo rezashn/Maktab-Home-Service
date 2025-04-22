@@ -2,6 +2,7 @@ package com.example.maktabproject1.servicemanagement.controller;
 
 import com.example.maktabproject1.servicemanagement.dto.OrderDto;
 import com.example.maktabproject1.ResponseDto;
+import com.example.maktabproject1.servicemanagement.dto.UpdateOrderDto;
 import com.example.maktabproject1.servicemanagement.entity.OfferEntity;
 import com.example.maktabproject1.servicemanagement.entity.OrderStatusType;
 import com.example.maktabproject1.servicemanagement.service.OrderService;
@@ -41,7 +42,7 @@ public class OrderController {
     }
 
     @PutMapping("/{orderId}")
-    public ResponseEntity<ResponseDto<OrderDto>> updateOrder(@PathVariable Long orderId, @Valid @RequestBody OrderDto orderDTO) {
+    public ResponseEntity<ResponseDto<OrderDto>> updateOrder(@PathVariable Long orderId, @Valid @RequestBody UpdateOrderDto orderDTO) {
         try {
             log.info("Attempting to update order with ID: {}, data: {}", orderId, orderDTO);
             OrderDto updatedOrder = orderService.updateOrder(orderId, orderDTO);

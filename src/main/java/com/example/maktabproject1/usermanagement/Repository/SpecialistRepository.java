@@ -1,6 +1,6 @@
 package com.example.maktabproject1.usermanagement.Repository;
 
-import com.example.maktabproject1.servicemanagement.entity.SpecialistEntity;
+import com.example.maktabproject1.usermanagement.entity.SpecialistEntity;
 import com.example.maktabproject1.servicemanagement.entity.SubServiceEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,13 +21,12 @@ public interface SpecialistRepository extends JpaRepository<SpecialistEntity, Lo
     @Query("SELECT s FROM SpecialistEntity s JOIN s.subServices ss " +
             "WHERE ss.name LIKE :subServiceName " +
             "AND s.rating >= :minRating")
-
     List<SpecialistEntity> findBySubServiceNameContainingAndRatingGreaterThanEqual(
             @Param("subServiceName") String subServiceName,
             @Param("minRating") BigDecimal minRating
     );
 
-    List<SpecialistEntity> findBySubService(SubServiceEntity subService);
+    List<SpecialistEntity> findBySubServices(SubServiceEntity subService);
 
     void deleteByUserId(Long userId);
 }

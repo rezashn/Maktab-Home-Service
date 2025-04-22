@@ -12,7 +12,6 @@ public interface OfferRepository extends JpaRepository<OfferEntity, Long> {
 
     List<OfferEntity> findByOrderId(Long orderId);
 
-        OfferEntity findByOrderAndIsAccepted(OrderEntity order, boolean isAccepted);
+    List<OfferEntity> findByOrder(OrderEntity order);
 
-        List<OfferEntity> findByOrder(OrderEntity order);
 }

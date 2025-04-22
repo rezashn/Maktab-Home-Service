@@ -4,15 +4,15 @@ import com.example.maktabproject1.servicemanagement.dto.OfferDTO;
 import com.example.maktabproject1.servicemanagement.dto.UpdateOfferDto;
 import com.example.maktabproject1.servicemanagement.entity.OfferEntity;
 import com.example.maktabproject1.servicemanagement.entity.OrderEntity;
-import com.example.maktabproject1.servicemanagement.entity.SpecialistEntity;
+import com.example.maktabproject1.usermanagement.entity.SpecialistEntity;
 import com.example.maktabproject1.servicemanagement.exception.OfferNotFoundException;
 import com.example.maktabproject1.servicemanagement.exception.OrderNotFoundException;
+import com.example.maktabproject1.servicemanagement.exception.ResponseNotFoundException;
 import com.example.maktabproject1.servicemanagement.exception.SpecialistNotFoundException;
 import com.example.maktabproject1.servicemanagement.repository.OfferRepository;
 import com.example.maktabproject1.servicemanagement.repository.OrderRepository;
 import com.example.maktabproject1.usermanagement.Repository.SpecialistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -63,7 +63,6 @@ public class OfferServiceImpl implements OfferService {
 
     @Override
     public OfferDTO updateOffer(Long id, UpdateOfferDto offerDTO) {
-        // Retrieve the existing offer entity, throwing a custom exception if not found
         OfferEntity offerEntity = offerRepository.findById(id)
                 .orElseThrow(() -> new OfferNotFoundException("Offer with ID " + id + " not found"));
 
@@ -95,6 +94,20 @@ public class OfferServiceImpl implements OfferService {
         }
         return offerDTOs;
     }
+
+    @Override
+    public List<OfferDTO> getOffersByOrder(Long orderId) {
+        OrderEntity order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResponseNotFoundException("Order not found with id: " + orderId));
+
+        List<OfferEntity> offers = offerRepository.findByOrder(order);
+
+        return offers.stream()
+                .map(this::mapOfferEntityToDto)
+                .toList();
+    }
+
+
     @Override
     public void acceptOffer(Long orderId, Long offerId) {
         OrderEntity order = orderRepository.findById(orderId).orElseThrow();

@@ -15,9 +15,6 @@ public class ServiceCategoryDto {
     @Size(max = 500, message = "Description must be 500 characters or less")
     private String description;
 
-    public ServiceCategoryDto() {
-    }
-
     public Long getId() {
         return id;
     }
@@ -47,7 +44,9 @@ public class ServiceCategoryDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ServiceCategoryDto that = (ServiceCategoryDto) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(description, that.description);
+        return Objects.equals(id, that.id) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(description, that.description);
     }
 
     @Override

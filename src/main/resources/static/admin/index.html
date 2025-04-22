@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Specialist Management</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            loadSpecialists();
+
+            function loadSpecialists() {
+                $.ajax({
+                    url: '/api/admin/pending-specialists',
+                    method: 'GET',
+                    success: function (data) {
+                        $('#specialistsList').empty();
+
+                        if (data.length === 0) {
+                            $('#specialistsList').append(`
+                                <tr><td colspan="3" class="text-center">No pending specialists found.</td></tr>
+                            `);
+                        } else {
+                            data.forEach(function (specialist) {
+                                $('#specialistsList').append(`
+                                    <tr>
+                                        <td>${specialist.firstName} ${specialist.lastName}</td>
+                                        <td>${specialist.email}</td>
+                                        <td>
+                                            <button class="btn btn-success approve-btn" data-id="${specialist.id}">Approve</button>
+                                            <button class="btn btn-danger reject-btn" data-id="${specialist.id}">Reject</button>
+                                        </td>
+                                    </tr>
+                                `);
+                            });
+
+                            $('.approve-btn').click(function () {
+                                const userId = $(this).data('id');
+                                approveSpecialist(userId);
+                            });
+
+                            $('.reject-btn').click(function () {
+                                const userId = $(this).data('id');
+                                rejectSpecialist(userId);
+                            });
+                        }
+                    },
+                    error: function () {
+                        alert("Failed to load specialists. Make sure you are logged in as ADMIN.");
+                    }
+                });
+            }
+
+            function approveSpecialist(userId) {
+                $.ajax({
+                    url: '/api/admin/approve-specialist/' + userId,
+                    method: 'POST',
+                    success: function (response) {
+                        alert("Specialist approved!");
+                        loadSpecialists();
+                    },
+                    error: function () {
+                        alert("Failed to approve specialist. Try again.");
+                    }
+                });
+            }
+
+            function rejectSpecialist(userId) {
+                $.ajax({
+                    url: '/api/admin/reject-specialist/' + userId,
+                    method: 'POST',
+                    success: function (response) {
+                        alert("Specialist rejected!");
+                        loadSpecialists();
+                    },
+                    error: function () {
+                        alert("Failed to reject specialist. Try again.");
+                    }
+                });
+            }
+        });
+    </script>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2 class="mb-4">Admin Panel - Pending Specialists</h2>
+
+    <table class="table table-bordered">
+        <thead class="thead-light">
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody id="specialistsList">
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

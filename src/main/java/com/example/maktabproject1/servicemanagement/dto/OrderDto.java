@@ -1,5 +1,6 @@
 package com.example.maktabproject1.servicemanagement.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
@@ -22,15 +23,13 @@ public class OrderDto {
 
     private String address;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime orderDate;
 
     @PositiveOrZero(message = "Proposed price cannot be negative")
     private BigDecimal proposedPrice;
 
     private String orderStatus;
-
-    public OrderDto() {
-    }
 
     public Long getId() {
         return id;
@@ -109,7 +108,15 @@ public class OrderDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OrderDto orderDto = (OrderDto) o;
-        return Objects.equals(id, orderDto.id) && Objects.equals(customerId, orderDto.customerId) && Objects.equals(specialistId, orderDto.specialistId) && Objects.equals(subServiceId, orderDto.subServiceId) && Objects.equals(description, orderDto.description) && Objects.equals(address, orderDto.address) && Objects.equals(orderDate, orderDto.orderDate) && Objects.equals(proposedPrice, orderDto.proposedPrice) && Objects.equals(orderStatus, orderDto.orderStatus);
+        return Objects.equals(id, orderDto.id) &&
+                Objects.equals(customerId, orderDto.customerId) &&
+                Objects.equals(specialistId, orderDto.specialistId) &&
+                Objects.equals(subServiceId, orderDto.subServiceId) &&
+                Objects.equals(description, orderDto.description) &&
+                Objects.equals(address, orderDto.address) &&
+                Objects.equals(orderDate, orderDto.orderDate) &&
+                Objects.equals(proposedPrice, orderDto.proposedPrice) &&
+                Objects.equals(orderStatus, orderDto.orderStatus);
     }
 
     @Override

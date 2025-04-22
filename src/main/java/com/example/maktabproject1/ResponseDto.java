@@ -6,13 +6,17 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class ResponseDto<T> implements Serializable {
+
+public class ResponseDto<T> {
 
     private boolean success;
     private T data;
     private String message;
+
+    public ResponseDto(boolean success, T data, String message){
+        this.success = success;
+        this.data = data;
+        this.message = message;
+    }
 
 }

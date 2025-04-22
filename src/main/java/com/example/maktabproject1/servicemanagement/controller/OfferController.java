@@ -90,6 +90,19 @@ public class OfferController {
         }
     }
 
+    @GetMapping("/order/{orderId}/by-entity")
+    public ResponseEntity<ResponseDto<List<OfferDTO>>> getOffersByOrderEntity(@PathVariable Long orderId) {
+        try {
+            List<OfferDTO> offers = offerService.getOffersByOrder(orderId);
+            return new ResponseEntity<>(new ResponseDto<>(true, offers, "Offers retrieved by order entity"), HttpStatus.OK);
+        } catch (ResponseNotFoundException e) {
+            return new ResponseEntity<>(new ResponseDto<>(false, null, e.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ResponseDto<>(false, null, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
     @PutMapping("/order/{orderId}/accept/{offerId}")
     public ResponseEntity<ResponseDto<Void>> acceptOffer(@PathVariable Long orderId, @PathVariable Long offerId) {
         try {

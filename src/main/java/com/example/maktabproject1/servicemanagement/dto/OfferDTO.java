@@ -23,9 +23,6 @@ public class OfferDTO {
 
     private int offerDuration;
 
-    public OfferDTO() {
-    }
-
     public Long getId() {
         return id;
     }
@@ -79,7 +76,12 @@ public class OfferDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OfferDTO offerDTO = (OfferDTO) o;
-        return offerDuration == offerDTO.offerDuration && Objects.equals(id, offerDTO.id) && Objects.equals(specialistId, offerDTO.specialistId) && Objects.equals(orderId, offerDTO.orderId) && Objects.equals(proposedPrice, offerDTO.proposedPrice) && Objects.equals(offerDate, offerDTO.offerDate);
+        return offerDuration == offerDTO.offerDuration &&
+                Objects.equals(id, offerDTO.id) &&
+                Objects.equals(specialistId, offerDTO.specialistId) &&
+                Objects.equals(orderId, offerDTO.orderId) &&
+                Objects.equals(proposedPrice, offerDTO.proposedPrice) &&
+                Objects.equals(offerDate, offerDTO.offerDate);
     }
 
     @Override

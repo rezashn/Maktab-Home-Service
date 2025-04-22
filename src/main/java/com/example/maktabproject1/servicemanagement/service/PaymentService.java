@@ -1,12 +1,13 @@
 package com.example.maktabproject1.servicemanagement.service;
 
 import com.example.maktabproject1.servicemanagement.entity.OrderEntity;
-import com.example.maktabproject1.usermanagement.service.CaptchaService;
-import com.example.maktabproject1.usermanagement.entity.UserCreditTransactionEntity;
+import com.example.maktabproject1.servicemanagement.entity.OrderStatusType;
 import com.example.maktabproject1.servicemanagement.repository.OrderRepository;
 import com.example.maktabproject1.usermanagement.Repository.UserCreditTransactionRepository;
-import com.example.maktabproject1.servicemanagement.entity.OrderStatusType;
+import com.example.maktabproject1.usermanagement.entity.UserCreditTransactionEntity;
 import com.example.maktabproject1.usermanagement.entity.UserEntity;
+import com.example.maktabproject1.usermanagement.service.CaptchaService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,25 +24,28 @@ public class PaymentService {
     private final UserCreditTransactionRepository userCreditTransactionRepository;
 
     @Autowired
-    public PaymentService(OrderRepository orderRepository, UserCreditTransactionRepository userCreditTransactionRepository) {
+    public PaymentService(OrderRepository orderRepository,
+                          UserCreditTransactionRepository userCreditTransactionRepository) {
         this.orderRepository = orderRepository;
         this.userCreditTransactionRepository = userCreditTransactionRepository;
     }
 
-    public String processPayment(Long orderId, String captchaAnswer, boolean useCredit) {
+    @Transactional
+    public String processPayment(Long orderId, int captchaNum1, int captchaNum2, String captchaAnswer, boolean useCredit) {
         OrderEntity order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
 
         if (!order.getStatus().equals(OrderStatusType.WAITING_FOR_PAYMENT)) {
             return "Order is not in a valid state for payment.";
         }
 
-        int[] captcha = CaptchaService.generateCaptcha();
-        int num1 = captcha[0];
-        int num2 = captcha[1];
-
-        if (!CaptchaService.validateCaptcha(num1, num2, Integer.parseInt(captchaAnswer))) {
-            return "Invalid CAPTCHA answer. Please try again.";
+        try {
+            int userAnswer = Integer.parseInt(captchaAnswer);
+            if (!CaptchaService.validateCaptcha(captchaNum1, captchaNum2, userAnswer)) {
+                return "Invalid CAPTCHA answer. Please try again.";
+            }
+        } catch (NumberFormatException e) {
+            return "CAPTCHA answer must be a number.";
         }
 
         if (order.getPaymentRequestTime() != null &&
@@ -51,27 +55,26 @@ public class PaymentService {
             return "Payment time has expired. Order is canceled.";
         }
 
-        if (useCredit) {
-            return processCreditPayment(order);
-        } else {
-            return processCardPayment(order);
-        }
+        return useCredit ? processCreditPayment(order) : processCardPayment(order);
     }
 
     private String processCreditPayment(OrderEntity order) {
         UserEntity user = order.getCustomer();
-        BigDecimal userCreditBalance = calculateUserCreditBalance(user);
+        BigDecimal creditBalance = calculateUserCreditBalance(user);
+        BigDecimal orderPrice = order.getSuggestedPrice();
 
-        if (userCreditBalance.compareTo(order.getSuggestedPrice()) >= 0) {
+        if (creditBalance.compareTo(orderPrice) >= 0) {
             UserCreditTransactionEntity transaction = new UserCreditTransactionEntity();
             transaction.setUser(user);
-            transaction.setAmount(order.getSuggestedPrice().negate());
+            transaction.setAmount(orderPrice.negate()); // Deduct
             transaction.setTransactionDate(LocalDateTime.now());
             transaction.setDescription("Payment for Order #" + order.getId());
+
             userCreditTransactionRepository.save(transaction);
 
             order.setStatus(OrderStatusType.PAID);
             orderRepository.save(order);
+
             return "Payment successful with credits! Order is marked as PAID.";
         } else {
             return "Not enough credit to complete the payment.";
@@ -79,7 +82,7 @@ public class PaymentService {
     }
 
     private String processCardPayment(OrderEntity order) {
-        boolean paymentSuccessful = processCardPayment(order.getSuggestedPrice());
+        boolean paymentSuccessful = simulateCardPayment(order.getSuggestedPrice());
         if (paymentSuccessful) {
             order.setStatus(OrderStatusType.PAID);
             orderRepository.save(order);
@@ -89,15 +92,13 @@ public class PaymentService {
         }
     }
 
-    private boolean processCardPayment(BigDecimal amount) {
-        return true;
+    private boolean simulateCardPayment(BigDecimal amount) {
+        return Math.random() < 0.9;
     }
 
     private BigDecimal calculateUserCreditBalance(UserEntity user) {
-        BigDecimal balance = BigDecimal.ZERO;
-        for (UserCreditTransactionEntity transaction : userCreditTransactionRepository.findByUser(user)) {
-            balance = balance.add(transaction.getAmount());
-        }
-        return balance;
+        return userCreditTransactionRepository.findByUser(user).stream()
+                .map(UserCreditTransactionEntity::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

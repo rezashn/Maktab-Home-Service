@@ -16,7 +16,7 @@ public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender mailSender;
 
-    @Value("${app.mail.from}")
+    @Value("${app.mail.from:default-email@example.com}")
     private String fromEmail;
 
     public EmailServiceImpl(JavaMailSender mailSender) {
