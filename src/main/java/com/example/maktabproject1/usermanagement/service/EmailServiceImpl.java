@@ -13,11 +13,13 @@ import org.slf4j.LoggerFactory;
 public class EmailServiceImpl implements EmailService {
 
     private static final Logger logger = LoggerFactory.getLogger(EmailServiceImpl.class);
-
     private final JavaMailSender mailSender;
 
     @Value("${app.mail.from:default-email@example.com}")
     private String fromEmail;
+
+    @Value("${app.verification.url:http://localhost:8080/api/auth/verify?token=}")
+    private String verificationBaseUrl;
 
     public EmailServiceImpl(JavaMailSender mailSender) {
         this.mailSender = mailSender;
@@ -25,11 +27,12 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendVerificationEmail(UserEntity user, String token) {
-        String subject = "Email verification";
-        String confirmationUrl = "http://localhost:8080/api/auth/verify?token=" + token;
+        String subject = "Email Verification";
+        String confirmationUrl = verificationBaseUrl + token;
         String message = String.format(
-                "Hi %s,\n\nPlease click the link below to verify your account:\n%s",
-                user.getFirstName(), confirmationUrl
+                "Hi %s,\n\nPlease click the link below to verify your account:\n%s\n\nThank you!",
+                user.getFirstName() != null ? user.getFirstName() : "User",
+                confirmationUrl
         );
 
         SimpleMailMessage email = new SimpleMailMessage();

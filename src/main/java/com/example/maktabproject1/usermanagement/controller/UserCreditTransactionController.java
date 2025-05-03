@@ -1,16 +1,18 @@
 package com.example.maktabproject1.usermanagement.controller;
 
-import com.example.maktabproject1.usermanagement.dto.UserCreditTransactionDto;
 import com.example.maktabproject1.ResponseDto;
+import com.example.maktabproject1.usermanagement.dto.UserCreditTransactionDto;
 import com.example.maktabproject1.usermanagement.service.UserCreditTransactionService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -63,6 +65,33 @@ public class UserCreditTransactionController {
     @GetMapping("/user/{userId}/withdrawals")
     public ResponseEntity<List<UserCreditTransactionDto>> getWithdrawalHistory(@PathVariable Long userId) {
         List<UserCreditTransactionDto> withdrawals = transactionService.getWithdrawalHistory(userId);
+        return new ResponseEntity<>(withdrawals, HttpStatus.OK);
+    }
+
+    @GetMapping("/user/{userId}/between")
+    public ResponseEntity<List<UserCreditTransactionDto>> getTransactionsBetween(
+            @PathVariable Long userId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
+        List<UserCreditTransactionDto> transactions = transactionService.getTransactionsBetween(userId, start, end);
+        return new ResponseEntity<>(transactions, HttpStatus.OK);
+    }
+
+    @GetMapping("/user/{userId}/deposits-between")
+    public ResponseEntity<List<UserCreditTransactionDto>> getDepositsBetween(
+            @PathVariable Long userId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
+        List<UserCreditTransactionDto> deposits = transactionService.getDepositsBetween(userId, start, end);
+        return new ResponseEntity<>(deposits, HttpStatus.OK);
+    }
+
+    @GetMapping("/user/{userId}/withdrawals-between")
+    public ResponseEntity<List<UserCreditTransactionDto>> getWithdrawalsBetween(
+            @PathVariable Long userId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
+        List<UserCreditTransactionDto> withdrawals = transactionService.getWithdrawalsBetween(userId, start, end);
         return new ResponseEntity<>(withdrawals, HttpStatus.OK);
     }
 }

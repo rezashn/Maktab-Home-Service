@@ -3,7 +3,7 @@ package com.example.maktabproject1.servicemanagement.controller;
 import com.example.maktabproject1.servicemanagement.service.ReviewService;
 import com.example.maktabproject1.servicemanagement.dto.ReviewDto;
 import com.example.maktabproject1.ResponseDto;
-import com.example.maktabproject1.servicemanagement.exception.ReviewNotFoundException;
+import com.example.maktabproject1.common.exception.ReviewNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

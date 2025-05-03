@@ -1,6 +1,7 @@
 package com.example.maktabproject1.usermanagement.dto;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -14,10 +15,13 @@ public class UserCreditTransactionDto implements Serializable {
     private Long userId;
 
     @NotNull(message = "Amount cannot be null")
+    @DecimalMin(value = "0.01", message = "Amount must be greater than zero")
     private BigDecimal amount;
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime transactionDate;
 
+    @Size(max = 255, message = "Description must not exceed 255 characters")
     private String description;
 
     public UserCreditTransactionDto() {}
@@ -30,6 +34,7 @@ public class UserCreditTransactionDto implements Serializable {
         this.description = description;
     }
 
+    // Getters & Setters...
 
     public Long getId() {
         return id;

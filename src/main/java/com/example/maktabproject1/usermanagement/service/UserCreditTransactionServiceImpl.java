@@ -1,10 +1,12 @@
 package com.example.maktabproject1.usermanagement.service;
 
-import com.example.maktabproject1.usermanagement.dto.UserCreditTransactionDto;
 import com.example.maktabproject1.ResponseDto;
+import com.example.maktabproject1.common.ErrorMessage;
+import com.example.maktabproject1.common.exception.BadRequestException;
+import com.example.maktabproject1.usermanagement.Repository.UserCreditTransactionRepository;
+import com.example.maktabproject1.usermanagement.dto.UserCreditTransactionDto;
 import com.example.maktabproject1.usermanagement.entity.UserCreditTransactionEntity;
 import com.example.maktabproject1.usermanagement.entity.UserEntity;
-import com.example.maktabproject1.usermanagement.Repository.UserCreditTransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,46 +29,50 @@ public class UserCreditTransactionServiceImpl implements UserCreditTransactionSe
 
     @Override
     public ResponseDto<UserCreditTransactionDto> deposit(Long userId, BigDecimal amount, String description) {
-
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            return new ResponseDto<>(false, null, "Deposit amount must be positive");
+            throw new BadRequestException(ErrorMessage.INVALID_DATA_INPUT);
         }
-        UserCreditTransactionDto transactionDto = new UserCreditTransactionDto();
-        transactionDto.setUserId(userId);
-        transactionDto.setAmount(amount);
-        transactionDto.setDescription("Deposit: " + description);
-        UserCreditTransactionDto createdTransaction = createTransaction(transactionDto);
-        return new ResponseDto<>(true, createdTransaction, "Deposit successful");
+
+        UserCreditTransactionDto dto = new UserCreditTransactionDto();
+        dto.setUserId(userId);
+        dto.setAmount(amount);
+        dto.setDescription("Deposit: " + description);
+        UserCreditTransactionDto result = createTransaction(dto);
+
+        return new ResponseDto<>(true, result, "Deposit successful");
     }
 
     @Override
     public ResponseDto<UserCreditTransactionDto> withdraw(Long userId, BigDecimal amount, String description) {
         BigDecimal currentCredit = getCurrentCredit(userId);
         if (amount.compareTo(currentCredit) > 0) {
-            return new ResponseDto<>(false, null, "Insufficient credit for withdrawal");
+            throw new BadRequestException(ErrorMessage.INSUFFICIENT_CREDIT);
         }
 
-        UserCreditTransactionDto transactionDto = new UserCreditTransactionDto();
-        transactionDto.setUserId(userId);
-        transactionDto.setAmount(amount.negate());
-        transactionDto.setDescription("Withdrawal: " + description);
-        UserCreditTransactionDto createdTransaction = createTransaction(transactionDto);
-        return new ResponseDto<>(true, createdTransaction, "Withdrawal successful");
+        UserCreditTransactionDto dto = new UserCreditTransactionDto();
+        dto.setUserId(userId);
+        dto.setAmount(amount.negate());
+        dto.setDescription("Withdrawal: " + description);
+        UserCreditTransactionDto result = createTransaction(dto);
+
+        return new ResponseDto<>(true, result, "Withdrawal successful");
     }
 
-
     @Override
-    public UserCreditTransactionDto createTransaction(UserCreditTransactionDto transactionDto) {
-        UserCreditTransactionEntity transactionEntity = new UserCreditTransactionEntity();
-        UserEntity user = userService.getUserEntityById(transactionDto.getUserId());
+    public UserCreditTransactionDto createTransaction(UserCreditTransactionDto dto) {
+        if (dto == null || dto.getUserId() == null || dto.getAmount() == null) {
+            throw new BadRequestException(ErrorMessage.INVALID_DATA_INPUT);
+        }
 
-        transactionEntity.setUser(user);
-        transactionEntity.setAmount(transactionDto.getAmount());
-        transactionEntity.setTransactionDate(LocalDateTime.now());
-        transactionEntity.setDescription(transactionDto.getDescription());
+        UserEntity user = userService.getUserEntityById(dto.getUserId());
 
-        UserCreditTransactionEntity savedEntity = transactionRepository.save(transactionEntity);
-        return mapEntityToDto(savedEntity);
+        UserCreditTransactionEntity entity = new UserCreditTransactionEntity();
+        entity.setUser(user);
+        entity.setAmount(dto.getAmount());
+        entity.setTransactionDate(LocalDateTime.now());
+        entity.setDescription(dto.getDescription());
+
+        return mapEntityToDto(transactionRepository.save(entity));
     }
 
     @Override
@@ -79,17 +85,16 @@ public class UserCreditTransactionServiceImpl implements UserCreditTransactionSe
 
     @Override
     public BigDecimal getCurrentCredit(Long userId) {
-        List<UserCreditTransactionDto> transactions = getTransactionsByUser(userId);
-        return transactions.stream()
-                .map(UserCreditTransactionDto::getAmount)
+        UserEntity user = userService.getUserEntityById(userId);
+        return transactionRepository.findByUser(user).stream()
+                .map(UserCreditTransactionEntity::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     @Override
     public List<UserCreditTransactionDto> getDepositHistory(Long userId) {
         UserEntity user = userService.getUserEntityById(userId);
-        return transactionRepository.findByUser(user).stream()
-                .filter(transaction -> transaction.getAmount().compareTo(BigDecimal.ZERO) > 0)
+        return transactionRepository.findByUserAndAmountGreaterThan(user, BigDecimal.ZERO).stream()
                 .map(this::mapEntityToDto)
                 .collect(Collectors.toList());
     }
@@ -97,8 +102,31 @@ public class UserCreditTransactionServiceImpl implements UserCreditTransactionSe
     @Override
     public List<UserCreditTransactionDto> getWithdrawalHistory(Long userId) {
         UserEntity user = userService.getUserEntityById(userId);
-        return transactionRepository.findByUser(user).stream()
-                .filter(transaction -> transaction.getAmount().compareTo(BigDecimal.ZERO) < 0)
+        return transactionRepository.findByUserAndAmountLessThan(user, BigDecimal.ZERO).stream()
+                .map(this::mapEntityToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserCreditTransactionDto> getTransactionsBetween(Long userId, LocalDateTime start, LocalDateTime end) {
+        UserEntity user = userService.getUserEntityById(userId);
+        return transactionRepository.findByUserAndTransactionDateBetween(user, start, end).stream()
+                .map(this::mapEntityToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserCreditTransactionDto> getDepositsBetween(Long userId, LocalDateTime start, LocalDateTime end) {
+        UserEntity user = userService.getUserEntityById(userId);
+        return transactionRepository.findByUserAndAmountGreaterThanAndTransactionDateBetween(user, BigDecimal.ZERO, start, end).stream()
+                .map(this::mapEntityToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserCreditTransactionDto> getWithdrawalsBetween(Long userId, LocalDateTime start, LocalDateTime end) {
+        UserEntity user = userService.getUserEntityById(userId);
+        return transactionRepository.findByUserAndAmountLessThanAndTransactionDateBetween(user, BigDecimal.ZERO, start, end).stream()
                 .map(this::mapEntityToDto)
                 .collect(Collectors.toList());
     }

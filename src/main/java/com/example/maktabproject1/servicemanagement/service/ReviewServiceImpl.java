@@ -5,7 +5,7 @@ import com.example.maktabproject1.servicemanagement.entity.OrderEntity;
 import com.example.maktabproject1.servicemanagement.entity.ReviewEntity;
 import com.example.maktabproject1.servicemanagement.repository.OrderRepository;
 import com.example.maktabproject1.servicemanagement.repository.ReviewRepository;
-import com.example.maktabproject1.servicemanagement.exception.ReviewNotFoundException;
+import com.example.maktabproject1.common.exception.ReviewNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

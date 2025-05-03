@@ -2,7 +2,7 @@ package com.example.maktabproject1.servicemanagement.service;
 
 import com.example.maktabproject1.servicemanagement.dto.ServiceCategoryDto;
 import com.example.maktabproject1.servicemanagement.entity.ServiceCategoryEntity;
-import com.example.maktabproject1.servicemanagement.exception.ResponseNotFoundException;
+import com.example.maktabproject1.common.exception.ResponseNotFoundException;
 import com.example.maktabproject1.servicemanagement.repository.ServiceCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

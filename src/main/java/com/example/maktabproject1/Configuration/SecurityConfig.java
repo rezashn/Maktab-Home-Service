@@ -2,13 +2,14 @@ package com.example.maktabproject1.Configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 public class SecurityConfig {
@@ -18,27 +19,26 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // ✅ Replace configure() with this:
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(new AntPathRequestMatcher("/login")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/register")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/users/register")).permitAll() // ✅ Your endpoint
-                        .requestMatchers(new AntPathRequestMatcher("/static/admin/**")).hasRole("ADMIN")
-                        .requestMatchers(new AntPathRequestMatcher("/api/admin/**")).hasRole("ADMIN")
-                        .requestMatchers(new AntPathRequestMatcher("/specialist/**")).hasRole("SPECIALIST")
-                        .requestMatchers(new AntPathRequestMatcher("/customer/**")).hasRole("CUSTOMER")
-                        .requestMatchers(new AntPathRequestMatcher("/api/auth/verify")).permitAll()
+                        .requestMatchers("/login", "/api/auth/verify", "/users/register").permitAll()
+                        .requestMatchers("/static/admin/**", "/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/specialist/**").hasRole("SPECIALIST")
+                        .requestMatchers("/customer/**").hasRole("CUSTOMER")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/login")
+                        .loginProcessingUrl("/api/login/login")
+                        .defaultSuccessUrl("/dashboard", true)
+                        .failureUrl("/api/login/login?error=true")
                         .permitAll()
                 )
                 .logout(logout -> logout
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                        .logoutSuccessUrl("/login?logout=true")
                         .permitAll()
                 );
 
@@ -46,7 +46,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 }

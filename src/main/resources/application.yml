@@ -7,6 +7,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+
   mail:
     host: smtp.gmail.com
     port: 587
@@ -24,3 +25,4 @@ spring:
 app:
   mail:
     from: irezashn@gmail.com
+    verification.url: http://localhost:8080/api/auth/verify?token=

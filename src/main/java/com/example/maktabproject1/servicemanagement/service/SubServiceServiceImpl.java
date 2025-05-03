@@ -3,7 +3,7 @@ package com.example.maktabproject1.servicemanagement.service;
 import com.example.maktabproject1.servicemanagement.dto.SubServiceDto;
 import com.example.maktabproject1.servicemanagement.entity.ServiceCategoryEntity;
 import com.example.maktabproject1.servicemanagement.entity.SubServiceEntity;
-import com.example.maktabproject1.servicemanagement.exception.ResponseNotFoundException;
+import com.example.maktabproject1.common.exception.ResponseNotFoundException;
 import com.example.maktabproject1.servicemanagement.repository.ServiceCategoryRepository;
 import com.example.maktabproject1.servicemanagement.repository.SubServiceRepository;
 import com.example.maktabproject1.ResponseDto;

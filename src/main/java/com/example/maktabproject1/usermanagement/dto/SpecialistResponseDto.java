@@ -1,7 +1,7 @@
 package com.example.maktabproject1.usermanagement.dto;
 
-
 import java.math.BigDecimal;
+import java.util.List;
 
 public class SpecialistResponseDto {
 
@@ -11,9 +11,20 @@ public class SpecialistResponseDto {
 
     private String lastName;
 
-    private byte[] image;
-
     private BigDecimal rating;
+
+    private List<String> subServiceNames;
+
+    // Constructor
+    public SpecialistResponseDto() {}
+
+    public SpecialistResponseDto(Long id, String firstName, String lastName, BigDecimal rating, List<String> subServiceNames) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.rating = rating;
+        this.subServiceNames = subServiceNames;
+    }
 
     public Long getId() {
         return id;
@@ -39,19 +50,19 @@ public class SpecialistResponseDto {
         this.lastName = lastName;
     }
 
-    public byte[] getImage() {
-        return image;
-    }
-
-    public void setImage(byte[] image) {
-        this.image = image;
-    }
-
     public BigDecimal getRating() {
         return rating;
     }
 
     public void setRating(BigDecimal rating) {
         this.rating = rating;
+    }
+
+    public List<String> getSubServiceNames() {
+        return subServiceNames;
+    }
+
+    public void setSubServiceNames(List<String> subServiceNames) {
+        this.subServiceNames = subServiceNames;
     }
 }

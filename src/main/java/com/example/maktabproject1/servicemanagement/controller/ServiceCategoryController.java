@@ -91,7 +91,7 @@ public class ServiceCategoryController {
             log.info("Attempting to delete service category with ID: {}", id);
             serviceCategoryService.deleteServiceCategory(id);
             log.info("Service category deleted successfully: {}", id);
-            ResponseDto<Void> response = new ResponseDto<>(true, null, "Service category deleted successfully");
+//            ResponseDto<Void> response = new ResponseDto<>(true, null, "Service category deleted successfully");
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             log.error("Error deleting service category: {}", e.getMessage(), e);

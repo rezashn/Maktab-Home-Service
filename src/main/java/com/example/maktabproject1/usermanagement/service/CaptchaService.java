@@ -1,18 +1,16 @@
 package com.example.maktabproject1.usermanagement.service;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class CaptchaService {
 
-    private static final Random random = new Random();
-
     public static int[] generateCaptcha() {
-        int num1 = random.nextInt(100);
-        int num2 = random.nextInt(100);
+        int num1 = ThreadLocalRandom.current().nextInt(1, 100);
+        int num2 = ThreadLocalRandom.current().nextInt(1, 100);
         return new int[]{num1, num2};
     }
 
     public static boolean validateCaptcha(int num1, int num2, int userAnswer) {
-        return (num1 + num2) == userAnswer;
+        return userAnswer == (num1 + num2);
     }
 }

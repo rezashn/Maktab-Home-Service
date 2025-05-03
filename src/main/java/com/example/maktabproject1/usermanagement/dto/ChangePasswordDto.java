@@ -19,7 +19,6 @@ public class ChangePasswordDto implements Serializable {
     )
     private String newPassword;
 
-    // Constructors
     public ChangePasswordDto() {}
 
     public ChangePasswordDto(String currentPassword, String newPassword) {
@@ -27,7 +26,6 @@ public class ChangePasswordDto implements Serializable {
         this.newPassword = newPassword;
     }
 
-    // Getters and Setters
     public String getCurrentPassword() {
         return currentPassword;
     }

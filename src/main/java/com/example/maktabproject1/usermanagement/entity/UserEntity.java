@@ -21,7 +21,7 @@ public class UserEntity {
     private String lastName;
 
     @Column(nullable = false, unique = true)
-    @Email(message = "Invalid email format")  // Optional validation
+    @Email
     private String email;
 
     @Column(nullable = false)
@@ -36,7 +36,7 @@ public class UserEntity {
     private UserStatusType status;
 
     @Column(nullable = false)
-    private LocalDateTime registrationDate = LocalDateTime.now();  // Default to current time
+    private LocalDateTime registrationDate = LocalDateTime.now();
 
     @Lob
     @Column(name = "image_data")

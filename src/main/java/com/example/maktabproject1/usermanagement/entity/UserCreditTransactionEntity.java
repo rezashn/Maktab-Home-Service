@@ -2,6 +2,7 @@ package com.example.maktabproject1.usermanagement.entity;
 
 import com.example.maktabproject1.servicemanagement.entity.OrderEntity;
 import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -92,5 +93,4 @@ public class UserCreditTransactionEntity {
     public int hashCode() {
         return getClass().hashCode();
     }
-
 }
