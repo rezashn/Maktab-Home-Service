@@ -1,7 +1,9 @@
 package com.example.maktabproject1.common.exception;
 
-public class NotFoundException extends RuntimeException {
-    public NotFoundException(String message) {
-        super(message);
+import com.example.maktabproject1.common.ErrorMessage;
+
+public class NotFoundException extends BaseRuntimeException {
+    public NotFoundException(ErrorMessage errorMessage) {
+        super(errorMessage);
     }
 }

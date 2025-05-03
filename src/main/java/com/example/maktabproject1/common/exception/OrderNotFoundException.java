@@ -4,6 +4,6 @@ import com.example.maktabproject1.common.ErrorMessage;
 
 public class OrderNotFoundException extends NotFoundException {
     public OrderNotFoundException() {
-        super(ErrorMessage.ORDER_NOT_FOUND.getMessage());
+        super(ErrorMessage.ORDER_NOT_FOUND);
     }
 }

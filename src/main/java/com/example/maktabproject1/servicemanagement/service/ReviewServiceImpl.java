@@ -1,11 +1,13 @@
 package com.example.maktabproject1.servicemanagement.service;
 
+import com.example.maktabproject1.common.ErrorMessage;
+import com.example.maktabproject1.common.exception.OrderNotFoundException;
+import com.example.maktabproject1.common.exception.ReviewNotFoundException;
 import com.example.maktabproject1.servicemanagement.dto.ReviewDto;
 import com.example.maktabproject1.servicemanagement.entity.OrderEntity;
 import com.example.maktabproject1.servicemanagement.entity.ReviewEntity;
 import com.example.maktabproject1.servicemanagement.repository.OrderRepository;
 import com.example.maktabproject1.servicemanagement.repository.ReviewRepository;
-import com.example.maktabproject1.common.exception.ReviewNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,25 +29,22 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public ReviewDto createReview(ReviewDto reviewDto) {
         ReviewEntity reviewEntity = new ReviewEntity();
-        OrderEntity orderEntity = orderRepository.findById(reviewDto.getOrderId()).orElseThrow(() -> new ReviewNotFoundException("Order not found"));
+        OrderEntity orderEntity = orderRepository.findById(reviewDto.getOrderId())
+                .orElseThrow(() -> new OrderNotFoundException());
+
         reviewEntity.setOrder(orderEntity);
         reviewEntity.setRating(reviewDto.getRating());
         reviewEntity.setComment(reviewDto.getComment());
 
         ReviewEntity savedReview = reviewRepository.save(reviewEntity);
-
-        ReviewDto savedReviewDto = new ReviewDto();
-        savedReviewDto.setId(savedReview.getId());
-        savedReviewDto.setOrderId(savedReview.getOrder().getId());
-        savedReviewDto.setRating(savedReview.getRating());
-        savedReviewDto.setComment(savedReview.getComment());
-
-        return savedReviewDto;
+        return mapReviewEntityToDto(savedReview);
     }
 
     @Override
     public ReviewDto getReviewById(Long id) {
-        ReviewEntity reviewEntity = reviewRepository.findById(id).orElseThrow(() -> new ReviewNotFoundException("Review not found"));
+        ReviewEntity reviewEntity = reviewRepository.findById(id)
+                .orElseThrow(() -> new ReviewNotFoundException());
+
         return mapReviewEntityToDto(reviewEntity);
     }
 
@@ -58,8 +57,12 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewDto updateReview(Long id, ReviewDto reviewDto) {
-        ReviewEntity reviewEntity = reviewRepository.findById(id).orElseThrow(() -> new ReviewNotFoundException("Review not found"));
-        OrderEntity orderEntity = orderRepository.findById(reviewDto.getOrderId()).orElseThrow(() -> new ReviewNotFoundException("Order not found"));
+        ReviewEntity reviewEntity = reviewRepository.findById(id)
+                .orElseThrow(() -> new ReviewNotFoundException());
+
+        OrderEntity orderEntity = orderRepository.findById(reviewDto.getOrderId())
+                .orElseThrow(() -> new OrderNotFoundException());
+
         reviewEntity.setOrder(orderEntity);
         reviewEntity.setRating(reviewDto.getRating());
         reviewEntity.setComment(reviewDto.getComment());
